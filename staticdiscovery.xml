@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<staticdiscovery>
+    <participant>
+        <name>TestPublisher</name>
+        <writer>
+            <userId>1</userId>
+            <entityID>2</entityID>
+            <topicName>TestTopic</topicName>
+            <topicDataType>Target</topicDataType>
+            <topicKind>WITH_KEY</topicKind>
+            <!-- 根据不同的QoS类型，这里可以配置不同的参数 -->
+            <!-- Durability QoS -->
+            <durabilityQos>VOLATILE_DURABILITY_QOS</durabilityQos>
+            <!-- Reliability QoS -->
+            <reliabilityQos>BEST_EFFORT_RELIABILITY_QOS</reliabilityQos>
+            <!-- Resource Limits QoS -->
+            <resourceLimitsQos>
+                <maxSamples>1000</maxSamples>
+                <maxInstances>10</maxInstances>
+                <maxSamplesPerInstance>100</maxSamplesPerInstance>
+            </resourceLimitsQos>
+            <!-- Lifespan QoS -->
+            <lifespanQos>
+                <duration>
+                    <sec>10</sec>
+                </duration>
+            </lifespanQos>
+            <!-- History QoS -->
+            <historyQos kind="KEEP_LAST_HISTORY_QOS">
+                <depth>10</depth>
+            </historyQos>
+            <!-- Ownership QoS -->
+            <ownershipQos kind="SHARED_OWNERSHIP_QOS"/>
+            <!-- Partition QoS -->
+            <partitionQos>PartitionA</partitionQos>
+            <partitionQos>PartitionB</partitionQos>
+            <!-- 网络配置 -->
+            <unicastLocator address="127.0.0.1" port="5000"/>
+            <unicastLocator address="192.168.5.165" port="5000"/>
+            <unicastLocator address="192.168.7.79" port="5000"/>
+            <multicastLocator address="239.255.0.1" port="5000"/>
+        </writer>
+    </participant>
+    <participant>
+        <name>TestSubscriber</name>
+        <reader>
+            <userId>3</userId>
+            <entityID>4</entityID>
+            <topicName>TestTopic</topicName>
+            <topicDataType>Target</topicDataType>
+            <topicKind>WITH_KEY</topicKind>
+            <!-- 与发布者对应的QoS配置 -->
+            <durabilityQos>VOLATILE_DURABILITY_QOS</durabilityQos>
+            <reliabilityQos>BEST_EFFORT_RELIABILITY_QOS</reliabilityQos>
+            <resourceLimitsQos>
+                <maxSamples>1000</maxSamples>
+                <maxInstances>10</maxInstances>
+                <maxSamplesPerInstance>100</maxSamplesPerInstance>
+            </resourceLimitsQos>
+            <lifespanQos>
+                <duration>
+                    <sec>10</sec>
+                </duration>
+            </lifespanQos>
+            <historyQos kind="KEEP_LAST_HISTORY_QOS">
+                <depth>10</depth>
+            </historyQos>
+            <ownershipQos kind="SHARED_OWNERSHIP_QOS"/>
+            <partitionQos>PartitionA</partitionQos>
+            <partitionQos>PartitionB</partitionQos>
+            <!-- 网络配置 -->
+            <unicastLocator address="127.0.0.1" port="5000"/>
+            <unicastLocator address="192.168.5.165" port="5000"/>
+            <unicastLocator address="192.168.7.79" port="5000"/>
+            <multicastLocator address="239.255.0.1" port="5000"/>
+        </reader>
+    </participant>
+</staticdiscovery> 

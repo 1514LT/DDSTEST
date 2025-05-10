@@ -29,13 +29,15 @@ public:
   }
   void RunDiscover()
   {
-    discover.init();
+    // discover.init();
+    discover.init("192.168.5.165",8080,1,TransportKind::UDPv4,false,"127.0.0.1",8080,1);
   }
   void RunPublisher()
   {
-    pub.init(m_type);
+    pub.init("192.168.5.165",8080,1,TransportKind::UDPv4,m_type);
     int index = 0;
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::cout << "send msg\n"; 
     for(int i=0;i<200;i++)
     {
       Target target;
@@ -57,7 +59,8 @@ public:
   }
   void RunSubscriber()
   {
-    sub.init(m_type);
+    // sub.init(m_type);
+    sub.init("192.168.5.165",8080,1,TransportKind::UDPv4,m_type);
     while (1)
     {
       std::this_thread::sleep_for(std::chrono::seconds(2));

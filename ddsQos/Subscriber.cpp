@@ -72,8 +72,8 @@ MainSubscriber::~MainSubscriber()
 
 bool MainSubscriber::init(testTypes type)
 {
-  // create particpant USING UDP
   m_testType = type;
+  // create particpant USING UDP
   DomainParticipantQos sub_domain_qos;
   sub_domain_qos.name("sub");
   auto udp_transport = std::make_shared<UDPv4TransportDescriptor>();
@@ -83,41 +83,178 @@ bool MainSubscriber::init(testTypes type)
   // 配置UDP传输
   sub_domain_qos.transport().use_builtin_transports = false;
   sub_domain_qos.transport().user_transports.push_back(udp_transport);
-  #if 0
-
-  WireProtocolConfigQos wire_protocol;
-  wire_protocol.builtin.discovery_config.discoveryProtocol =
-    eprosima::fastrtps::rtps::DiscoveryProtocol_t::CLIENT;
-  // 设置多播地址
-  eprosima::fastrtps::rtps::Locator_t multicast_locator;
-  eprosima::fastrtps::rtps::IPLocator::setIPv4(multicast_locator, 239, 255, 0, 1);
-  multicast_locator.port = 7400;
-  sub_domain_qos.wire_protocol() = wire_protocol;
+  #ifdef XML
+  std::string file = "file://subscriber.xml";
+  sub_domain_qos.wire_protocol().builtin.discovery_config.use_SIMPLE_EndpointDiscoveryProtocol = false;
+  sub_domain_qos.wire_protocol().builtin.discovery_config.use_STATIC_EndpointDiscoveryProtocol = true;
+  sub_domain_qos.wire_protocol().builtin.discovery_config.static_edp_xml_config("file://subscriber.xml");
+  m_participant = DomainParticipantFactory::get_instance()->create_participant(0, sub_domain_qos);
   #else
-#endif
-m_participant = DomainParticipantFactory::get_instance()->create_participant(0,sub_domain_qos);
-if(!m_participant)
+  m_participant = DomainParticipantFactory::get_instance()->create_participant(0,sub_domain_qos);
+  #endif
+  if(!m_participant)
+  {
+    return false;
+  }
+  SubscriberQos subQos;
+  if(m_testType == testTypes::PartitionA)
+  {
+    subQos.partition().push_back("partitionA");
+  }
+  else if(m_testType == testTypes::PartitionB)
+  {
+    subQos.partition().push_back("partitionB");
+  }
+  m_subscriber = m_participant->create_subscriber(subQos,nullptr);
+  if(!m_subscriber)
+  {
+    return false;
+  }
+  return
+  initSubType("TargetTopic","Target",new TargetPubSubType,&m_listener);
+}
+bool MainSubscriber::init(
+    const std::string& server_address,
+    unsigned short server_port,
+    unsigned short server_id,
+    TransportKind transport,
+    testTypes type)
 {
-  return false;
-}
-SubscriberQos subQos;
-if(m_testType == testTypes::PartitionA)
-{
-  subQos.partition().push_back("partitionA");
-}
-else if(m_testType == testTypes::PartitionB)
-{
-  subQos.partition().push_back("partitionB");
-}
-m_subscriber = m_participant->create_subscriber(subQos,nullptr);
-if(!m_subscriber)
-{
-  return false;
-}
-return
-initSubType("TargetTopic","Target",new TargetPubSubType,&m_listener);
-}
+  m_testType = type;
+  DomainParticipantQos sub_domain_qos;
+  sub_domain_qos.name("sub");
+  sub_domain_qos.transport().use_builtin_transports = false;
+    std::string ip_server_address(server_address);
+    // Check if DNS is required
+    if (!is_ip(server_address))
+    {
+        ip_server_address = get_ip_from_dns(server_address, transport);
+    }
 
+    if (ip_server_address.empty())
+    {
+        return false;
+    }
+
+    // Create DS SERVER locator
+    eprosima::fastdds::rtps::Locator server_locator;
+    eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(server_locator, server_port);
+
+    std::shared_ptr<eprosima::fastdds::rtps::TransportDescriptorInterface> descriptor;
+
+    switch (transport)
+    {
+        case TransportKind::SHM:
+            descriptor = std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
+            server_locator.kind = LOCATOR_KIND_SHM;
+            break;
+
+        case TransportKind::UDPv4:
+        {
+            auto descriptor_tmp = std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
+            // descriptor_tmp->interfaceWhiteList.push_back(ip_server_address);
+            descriptor_tmp->sendBufferSize = 65501;
+            descriptor_tmp->receiveBufferSize = 65501;
+            descriptor_tmp->non_blocking_send = true;
+            descriptor = descriptor_tmp;
+
+            server_locator.kind = LOCATOR_KIND_UDPv4;
+            eprosima::fastrtps::rtps::IPLocator::setIPv4(server_locator, ip_server_address);
+            break;
+        }
+
+        case TransportKind::UDPv6:
+        {
+            auto descriptor_tmp = std::make_shared<eprosima::fastdds::rtps::UDPv6TransportDescriptor>();
+            // descriptor_tmp->interfaceWhiteList.push_back(ip_server_address);
+            descriptor = descriptor_tmp;
+
+            server_locator.kind = LOCATOR_KIND_UDPv6;
+            eprosima::fastrtps::rtps::IPLocator::setIPv6(server_locator, ip_server_address);
+            break;
+        }
+
+        case TransportKind::TCPv4:
+        {
+            auto descriptor_tmp = std::make_shared<eprosima::fastdds::rtps::TCPv4TransportDescriptor>();
+            // descriptor_tmp->interfaceWhiteList.push_back(ip_server_address);
+            // One listening port must be added either in the pub or the sub
+            descriptor_tmp->add_listener_port(0);
+            descriptor = descriptor_tmp;
+
+            server_locator.kind = LOCATOR_KIND_TCPv4;
+            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(server_locator, server_port);
+            eprosima::fastrtps::rtps::IPLocator::setIPv4(server_locator, ip_server_address);
+            break;
+        }
+
+        case TransportKind::TCPv6:
+        {
+            auto descriptor_tmp = std::make_shared<eprosima::fastdds::rtps::TCPv6TransportDescriptor>();
+            // descriptor_tmp->interfaceWhiteList.push_back(ip_server_address);
+            // One listening port must be added either in the pub or the sub
+            descriptor_tmp->add_listener_port(0);
+            descriptor = descriptor_tmp;
+
+            server_locator.kind = LOCATOR_KIND_TCPv6;
+            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(server_locator, server_port);
+            eprosima::fastrtps::rtps::IPLocator::setIPv4(server_locator, ip_server_address);
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    // Set participant as DS CLIENT
+    sub_domain_qos.wire_protocol().builtin.discovery_config.discoveryProtocol =
+            eprosima::fastrtps::rtps::DiscoveryProtocol_t::CLIENT;
+
+    // Set SERVER's GUID prefix
+    RemoteServerAttributes remote_server_att;
+    remote_server_att.guidPrefix = get_discovery_server_guid_from_id(server_id);
+
+    // Set SERVER's listening locator for PDP
+    remote_server_att.metatrafficUnicastLocatorList.push_back(server_locator);
+
+    // Add remote SERVER to CLIENT's list of SERVERs
+    sub_domain_qos.wire_protocol().builtin.discovery_config.m_DiscoveryServers.push_back(remote_server_att);
+
+    // Add descriptor
+    sub_domain_qos.transport().user_transports.push_back(descriptor);
+
+    // CREATE THE PARTICIPANT
+    m_participant = DomainParticipantFactory::get_instance()->create_participant(0, sub_domain_qos,nullptr,
+                    StatusMask::all() >> StatusMask::data_on_readers());
+
+    if (m_participant == nullptr)
+    {
+        return false;
+    }
+
+    std::cout <<
+        "Subscriber Participant " << sub_domain_qos.name() <<
+        " created with GUID " << m_participant->guid() <<
+        " connecting to server <" << server_locator  << "> " <<
+        " with Guid: <" << remote_server_att.guidPrefix << "> " <<
+        std::endl;
+  SubscriberQos subQos;
+  if(m_testType == testTypes::PartitionA)
+  {
+    subQos.partition().push_back("partitionA");
+  }
+  else if(m_testType == testTypes::PartitionB)
+  {
+    subQos.partition().push_back("partitionB");
+  }
+  m_subscriber = m_participant->create_subscriber(subQos,nullptr);
+  if(!m_subscriber)
+  {
+    return false;
+  }
+  return
+  initSubType("TargetTopic","Target",new TargetPubSubType,&m_listener);
+}
 bool MainSubscriber::initSubType(const std::string &topicName, const std::string & typeName, TopicDataType *dataType, DataReaderListener * listener)
 {
   m_type.emplace_back(dataType);

@@ -4,8 +4,10 @@
 #include "DataDefine.h"
 #include "DataDefinePubSubTypes.h"
 #include "TestType.hpp"
+#include "common.h"
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/dds/domain/DomainParticipantListener.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
@@ -14,7 +16,9 @@
 #include <fastdds/dds/publisher/Publisher.hpp>
 
 #include <fastdds/rtps/transport/TCPv4TransportDescriptor.h>
+#include <fastdds/rtps/transport/TCPv6TransportDescriptor.h>
 #include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
+#include <fastdds/rtps/transport/UDPv6TransportDescriptor.h>
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
 #include <fastrtps/utils/IPLocator.h>
 
@@ -51,11 +55,48 @@ public:
   ~MainPublisher();
 public:
   bool init(testTypes type = testTypes::Default);
+  bool init(
+    const std::string& server_address,
+    unsigned short server_port,
+    unsigned short server_id,
+    TransportKind transport,
+    testTypes type = testTypes::Default);
   bool initPubType(const std::string & topicName, const std::string & typeName, TopicDataType * dataType, DataWriterListener * listener);
   bool TargetMatched();
   bool PublishTarget(Target &target);
   void SendMsg();
   void SendMsg(Target& target);
+    class PubListener : public eprosima::fastdds::dds::DomainParticipantListener
+    {
+    public:
+
+        PubListener()
+            : matched_(0)
+        {
+        }
+
+        ~PubListener() override
+        {
+        }
+
+        //! Callback executed when a DataReader is matched or unmatched
+        void on_publication_matched(
+                eprosima::fastdds::dds::DataWriter* writer,
+                const eprosima::fastdds::dds::PublicationMatchedStatus& info) override;
+
+        //! Callback executed when a DomainParticipant is discovered, dropped or removed
+        void on_participant_discovery(
+                eprosima::fastdds::dds::DomainParticipant* /*participant*/,
+                eprosima::fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
+
+    private:
+
+        using eprosima::fastdds::dds::DomainParticipantListener::on_participant_discovery;
+
+        //! Number of DataReaders matched to the associated DataWriter
+        std::atomic<std::uint32_t> matched_;
+    }
+    listener_;
 };
 
 

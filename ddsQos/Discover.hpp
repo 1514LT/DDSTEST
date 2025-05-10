@@ -11,13 +11,25 @@
 #include <fastdds/dds/publisher/DataWriterListener.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
 #include <fastdds/dds/publisher/Publisher.hpp>
+
+#include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
+#include <fastdds/rtps/transport/UDPv6TransportDescriptor.h>
+#include <fastdds/rtps/transport/TCPv4TransportDescriptor.h>
+#include <fastdds/rtps/transport/TCPv6TransportDescriptor.h>
+#include <fastrtps/attributes/ParticipantAttributes.h>
+
 #include <atomic>
 #include <thread>
 #include <map>
 #include <sstream>
 #include <mutex>
+#include "common.h"
+#include "TestType.hpp"
 using namespace eprosima::fastdds::dds;
 using namespace eprosima;
+
+
 
 class DiscoverListenler : public DomainParticipantListener
 { 
@@ -57,6 +69,15 @@ public:
   ~Discover();
 public:
   bool init();
+  bool init(
+        std::string server_address,
+        unsigned short server_port,
+        unsigned short server_id,
+        TransportKind transport,
+        bool has_connection_server,
+        std::string connection_server_address,
+        unsigned short connection_server_port,
+        unsigned short connection_server_id);
 };
 
 

@@ -300,6 +300,7 @@ bool MainPublisher::initPubType(const std::string & topicName, const std::string
     writer_qos.resource_limits().max_samples = 1000;
     writer_qos.resource_limits().max_instances = 1;
     writer_qos.resource_limits().max_samples_per_instance = 1000;
+    std::cout << "set durability success" << std::endl;
     break;
   case testTypes::Deadline:
     // 截止时间

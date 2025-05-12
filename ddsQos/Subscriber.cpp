@@ -281,6 +281,7 @@ bool MainSubscriber::initSubType(const std::string &topicName, const std::string
     readerQos.resource_limits().max_samples = 1000;
     readerQos.resource_limits().max_instances = 1;
     readerQos.resource_limits().max_samples_per_instance = 1000;
+    std::cout << "set durability success" << std::endl;
     break;
   case testTypes::Deadline:
     // 截止时间

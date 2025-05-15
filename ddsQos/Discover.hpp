@@ -37,6 +37,9 @@ private:
   // guid:name
   std::map<std::string,std::string> m_participant;
   std::mutex mtx_uid;
+  std::atomic_int m_participanter;
+  std::atomic_int m_subscriber;
+  std::atomic_int m_publisher;
   // std::atomic<std::map<u_int32_t,std::string>> m_participant;
 public:
   DiscoverListenler();

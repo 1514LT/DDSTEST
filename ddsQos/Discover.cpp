@@ -17,6 +17,7 @@ void DiscoverListenler::on_participant_discovery(
   if (info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
   {
     std::cout << "New participant discovered:";
+    m_participanter ++;
     auto names = participant->get_participant_names();
     std::cout << names[names.size()-1] << std::endl;
     std::ostringstream output;
@@ -35,7 +36,8 @@ void DiscoverListenler::on_participant_discovery(
   else if (info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT ||
           info.status == eprosima::fastrtps::rtps::ParticipantDiscoveryInfo::DROPPED_PARTICIPANT)
   {
-    std::cout << "New participant lost:";
+    m_participanter --;
+    std::cout << "New participant losted:";
     std::ostringstream output;
     output << info.info.m_guid;
     std::string guid = output.str();
@@ -52,11 +54,14 @@ void DiscoverListenler::on_subscriber_discovery(
 {
   if (info.status == eprosima::fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERED_READER)
   {
-      std::cout << "New subscriber discovered" << std::endl;
+    m_subscriber ++;
+    std::cout << "New subscriber discovered,total:" << m_subscriber << std::endl;
   }
   else if (info.status == eprosima::fastrtps::rtps::ReaderDiscoveryInfo::REMOVED_READER)
   {
-      std::cout << "New subscriber lost" << std::endl;
+    m_subscriber --;
+    std::cout << "New subscriber losted,total :" << m_subscriber << std::endl;
+      
   }
 }
 
@@ -66,11 +71,13 @@ void DiscoverListenler::on_publisher_discovery(
 {
   if (info.status == eprosima::fastrtps::rtps::WriterDiscoveryInfo::DISCOVERED_WRITER)
   {
-      std::cout << "New publisher discovered" << std::endl;
+    m_publisher ++;
+    std::cout << "New publisher discovered,total:" << m_publisher << std::endl;
   }
   else if (info.status == eprosima::fastrtps::rtps::WriterDiscoveryInfo::REMOVED_WRITER)
   {
-      std::cout << "New publisher lost" << std::endl;
+    m_publisher --;
+    std::cout << "New publisher losted,total:" << m_publisher << std::endl;
   }
 }
 

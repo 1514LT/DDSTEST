@@ -71,13 +71,13 @@ void DiscoverListenler::on_publisher_discovery(
 {
   if (info.status == eprosima::fastrtps::rtps::WriterDiscoveryInfo::DISCOVERED_WRITER)
   {
-    m_publisher ++;
-    std::cout << "New publisher discovered,total:" << m_publisher << std::endl;
+    // m_publisher ++;
+    std::cout << "New publisher discovered"  << std::endl;
   }
   else if (info.status == eprosima::fastrtps::rtps::WriterDiscoveryInfo::REMOVED_WRITER)
   {
-    m_publisher --;
-    std::cout << "New publisher losted,total:" << m_publisher << std::endl;
+    // m_publisher --;
+    std::cout << "New publisher losted" <<  std::endl;
   }
 }
 

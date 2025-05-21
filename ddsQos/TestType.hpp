@@ -13,7 +13,7 @@ enum class testTypes {
   Ownership, // 所有权
   PartitionA, // 分区A
   PartitionB, // 分区B
-  UDPCrossNetwork, // UDP跨网络
+  Test, // UDP跨网络
   Default
 };
 

@@ -35,24 +35,29 @@ public:
   void RunPublisher()
   {
     pub.init("192.168.5.165",8080,1,TransportKind::UDPv4,m_type);
-    int index = 0;
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    std::cout << "send msg\n"; 
-    for(int i=0;i<200;i++)
+    Target target;
+    target.index(0);
+    target.message("hello world");
+    if(m_type == testTypes::Test)
     {
-      Target target;
-      target.index(index);
-      target.message("hello world");
-      pub.SendMsg(target);
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      index++;
+      target.replayFlag(1);
     }
-    std::cout << "send over\n";
+    pub.SendMsg(target);
     if(m_type == testTypes::Durability || m_type == testTypes::ResourceLimits)
     {
       while (1)
       {
         std::this_thread::sleep_for(std::chrono::seconds(1));
+      }
+    }
+    else if(m_type == testTypes::Test)
+    {
+      MainSubscriber sub;
+      sub.init("192.168.5.165",8080,1,TransportKind::UDPv4,testTypes::Test);
+      while (1)
+      {
+        std::this_thread::sleep_for(std::chrono::seconds(10));
       }
     }
     std::cout << "pub exit\n";
@@ -130,10 +135,10 @@ int main(int argc, char const *argv[])
         main.m_type = testTypes::PartitionB;
       }
       break;
-    case 'U':
-      if (qosType == "UDPCrossNetwork") {
-        std::cout << "UDPCrossNetwork" << std::endl;
-        main.m_type = testTypes::UDPCrossNetwork;
+    case 'T':
+      if (qosType == "Test") {
+        std::cout << "Test" << std::endl;
+        main.m_type = testTypes::Test;
       }
       break;
   }

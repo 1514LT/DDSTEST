@@ -24,8 +24,11 @@
 
 #include "DataDefine.h"
 
-constexpr uint32_t Target_max_cdr_typesize {268UL};
+constexpr uint32_t Target_max_cdr_typesize {269UL};
 constexpr uint32_t Target_max_key_cdr_typesize {0UL};
+
+constexpr uint32_t Replay_max_cdr_typesize {268UL};
+constexpr uint32_t Replay_max_key_cdr_typesize {0UL};
 
 
 namespace eprosima {
@@ -39,6 +42,12 @@ class CdrSizeCalculator;
 eProsima_user_DllExport void serialize_key(
         eprosima::fastcdr::Cdr& scdr,
         const Target& data);
+
+
+
+eProsima_user_DllExport void serialize_key(
+        eprosima::fastcdr::Cdr& scdr,
+        const Replay& data);
 
 
 } // namespace fastcdr

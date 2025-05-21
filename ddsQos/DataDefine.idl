@@ -2,4 +2,10 @@ struct Target
 {
     unsigned long index;
     string message;
+    octet replayFlag;
+};
+struct Replay
+{
+    octet recvFlag;
+    string guid;
 };

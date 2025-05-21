@@ -5,6 +5,8 @@
 #include "DataDefinePubSubTypes.h"
 #include "TestType.hpp"
 #include "common.h"
+#include <thread>
+#include "Subscriber.hpp"
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
@@ -64,8 +66,11 @@ public:
   bool initPubType(const std::string & topicName, const std::string & typeName, TopicDataType * dataType, DataWriterListener * listener);
   bool TargetMatched();
   bool PublishTarget(Target &target);
+  bool PublishReplay(Replay &replay);
   void SendMsg();
   void SendMsg(Target& target);
+  void SendMsg(Replay& replay);
+  DomainParticipant* getParticipant();
     class PubListener : public eprosima::fastdds::dds::DomainParticipantListener
     {
     public:

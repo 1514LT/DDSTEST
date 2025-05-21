@@ -4,6 +4,9 @@
 #include "DataDefine.h"
 #include "DataDefinePubSubTypes.h"
 #include "TestType.hpp"
+#include "Publisher.hpp"
+#include <fstream>
+#include <sstream>
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
@@ -36,6 +39,7 @@ class MainSubListener : public DataReaderListener
 {
 private:
   std::atomic_int m_samples;
+  std::atomic_int m_replays;
 public:
   MainSubListener();
   ~MainSubListener();

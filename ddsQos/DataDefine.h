@@ -176,10 +176,145 @@ public:
      */
     eProsima_user_DllExport std::string& message();
 
+
+    /*!
+     * @brief This function sets a value in member replayFlag
+     * @param _replayFlag New value for member replayFlag
+     */
+    eProsima_user_DllExport void replayFlag(
+            uint8_t _replayFlag);
+
+    /*!
+     * @brief This function returns the value of member replayFlag
+     * @return Value of member replayFlag
+     */
+    eProsima_user_DllExport uint8_t replayFlag() const;
+
+    /*!
+     * @brief This function returns a reference to member replayFlag
+     * @return Reference to member replayFlag
+     */
+    eProsima_user_DllExport uint8_t& replayFlag();
+
 private:
 
     uint32_t m_index{0};
     std::string m_message;
+    uint8_t m_replayFlag{0};
+
+};
+
+
+/*!
+ * @brief This class represents the structure Replay defined by the user in the IDL file.
+ * @ingroup DataDefine
+ */
+class Replay
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport Replay();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~Replay();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object Replay that will be copied.
+     */
+    eProsima_user_DllExport Replay(
+            const Replay& x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object Replay that will be copied.
+     */
+    eProsima_user_DllExport Replay(
+            Replay&& x) noexcept;
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object Replay that will be copied.
+     */
+    eProsima_user_DllExport Replay& operator =(
+            const Replay& x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object Replay that will be copied.
+     */
+    eProsima_user_DllExport Replay& operator =(
+            Replay&& x) noexcept;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Replay object to compare.
+     */
+    eProsima_user_DllExport bool operator ==(
+            const Replay& x) const;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x Replay object to compare.
+     */
+    eProsima_user_DllExport bool operator !=(
+            const Replay& x) const;
+
+    /*!
+     * @brief This function sets a value in member recvFlag
+     * @param _recvFlag New value for member recvFlag
+     */
+    eProsima_user_DllExport void recvFlag(
+            uint8_t _recvFlag);
+
+    /*!
+     * @brief This function returns the value of member recvFlag
+     * @return Value of member recvFlag
+     */
+    eProsima_user_DllExport uint8_t recvFlag() const;
+
+    /*!
+     * @brief This function returns a reference to member recvFlag
+     * @return Reference to member recvFlag
+     */
+    eProsima_user_DllExport uint8_t& recvFlag();
+
+
+    /*!
+     * @brief This function copies the value in member guid
+     * @param _guid New value to be copied in member guid
+     */
+    eProsima_user_DllExport void guid(
+            const std::string& _guid);
+
+    /*!
+     * @brief This function moves the value in member guid
+     * @param _guid New value to be moved in member guid
+     */
+    eProsima_user_DllExport void guid(
+            std::string&& _guid);
+
+    /*!
+     * @brief This function returns a constant reference to member guid
+     * @return Constant reference to member guid
+     */
+    eProsima_user_DllExport const std::string& guid() const;
+
+    /*!
+     * @brief This function returns a reference to member guid
+     * @return Reference to member guid
+     */
+    eProsima_user_DllExport std::string& guid();
+
+private:
+
+    uint8_t m_recvFlag{0};
+    std::string m_guid;
 
 };
 

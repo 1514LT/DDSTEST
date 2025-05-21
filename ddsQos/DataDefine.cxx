@@ -52,6 +52,7 @@ Target::Target(
 {
     m_index = x.m_index;
     m_message = x.m_message;
+    m_replayFlag = x.m_replayFlag;
 }
 
 Target::Target(
@@ -59,6 +60,7 @@ Target::Target(
 {
     m_index = x.m_index;
     m_message = std::move(x.m_message);
+    m_replayFlag = x.m_replayFlag;
 }
 
 Target& Target::operator =(
@@ -67,6 +69,7 @@ Target& Target::operator =(
 
     m_index = x.m_index;
     m_message = x.m_message;
+    m_replayFlag = x.m_replayFlag;
     return *this;
 }
 
@@ -76,6 +79,7 @@ Target& Target::operator =(
 
     m_index = x.m_index;
     m_message = std::move(x.m_message);
+    m_replayFlag = x.m_replayFlag;
     return *this;
 }
 
@@ -83,7 +87,8 @@ bool Target::operator ==(
         const Target& x) const
 {
     return (m_index == x.m_index &&
-           m_message == x.m_message);
+           m_message == x.m_message &&
+           m_replayFlag == x.m_replayFlag);
 }
 
 bool Target::operator !=(
@@ -157,6 +162,158 @@ const std::string& Target::message() const
 std::string& Target::message()
 {
     return m_message;
+}
+
+
+/*!
+ * @brief This function sets a value in member replayFlag
+ * @param _replayFlag New value for member replayFlag
+ */
+void Target::replayFlag(
+        uint8_t _replayFlag)
+{
+    m_replayFlag = _replayFlag;
+}
+
+/*!
+ * @brief This function returns the value of member replayFlag
+ * @return Value of member replayFlag
+ */
+uint8_t Target::replayFlag() const
+{
+    return m_replayFlag;
+}
+
+/*!
+ * @brief This function returns a reference to member replayFlag
+ * @return Reference to member replayFlag
+ */
+uint8_t& Target::replayFlag()
+{
+    return m_replayFlag;
+}
+
+
+
+
+Replay::Replay()
+{
+}
+
+Replay::~Replay()
+{
+}
+
+Replay::Replay(
+        const Replay& x)
+{
+    m_recvFlag = x.m_recvFlag;
+    m_guid = x.m_guid;
+}
+
+Replay::Replay(
+        Replay&& x) noexcept
+{
+    m_recvFlag = x.m_recvFlag;
+    m_guid = std::move(x.m_guid);
+}
+
+Replay& Replay::operator =(
+        const Replay& x)
+{
+
+    m_recvFlag = x.m_recvFlag;
+    m_guid = x.m_guid;
+    return *this;
+}
+
+Replay& Replay::operator =(
+        Replay&& x) noexcept
+{
+
+    m_recvFlag = x.m_recvFlag;
+    m_guid = std::move(x.m_guid);
+    return *this;
+}
+
+bool Replay::operator ==(
+        const Replay& x) const
+{
+    return (m_recvFlag == x.m_recvFlag &&
+           m_guid == x.m_guid);
+}
+
+bool Replay::operator !=(
+        const Replay& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function sets a value in member recvFlag
+ * @param _recvFlag New value for member recvFlag
+ */
+void Replay::recvFlag(
+        uint8_t _recvFlag)
+{
+    m_recvFlag = _recvFlag;
+}
+
+/*!
+ * @brief This function returns the value of member recvFlag
+ * @return Value of member recvFlag
+ */
+uint8_t Replay::recvFlag() const
+{
+    return m_recvFlag;
+}
+
+/*!
+ * @brief This function returns a reference to member recvFlag
+ * @return Reference to member recvFlag
+ */
+uint8_t& Replay::recvFlag()
+{
+    return m_recvFlag;
+}
+
+
+/*!
+ * @brief This function copies the value in member guid
+ * @param _guid New value to be copied in member guid
+ */
+void Replay::guid(
+        const std::string& _guid)
+{
+    m_guid = _guid;
+}
+
+/*!
+ * @brief This function moves the value in member guid
+ * @param _guid New value to be moved in member guid
+ */
+void Replay::guid(
+        std::string&& _guid)
+{
+    m_guid = std::move(_guid);
+}
+
+/*!
+ * @brief This function returns a constant reference to member guid
+ * @return Constant reference to member guid
+ */
+const std::string& Replay::guid() const
+{
+    return m_guid;
+}
+
+/*!
+ * @brief This function returns a reference to member guid
+ * @return Reference to member guid
+ */
+std::string& Replay::guid()
+{
+    return m_guid;
 }
 
 

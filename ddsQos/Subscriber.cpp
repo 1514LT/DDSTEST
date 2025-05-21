@@ -32,13 +32,38 @@ void MainSubListener::on_data_available(DataReader * reader)
   if (reader->get_topicdescription()->get_name() == "TargetTopic")
   {
     Target msg;
-    while (reader->take_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
+    while (reader->read_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
     // while (reader->read_next_sample(&msg,&info) == ReturnCode_t::RETCODE_OK)
     {
       if (info.valid_data)
       {
         std::cout << "index:" << msg.index() << std::endl;
         std::cout << "message:" << msg.message() << std::endl;
+        // replay
+        if(msg.replayFlag())
+        {
+          Replay replay;
+          replay.recvFlag(1);
+          MainPublisher pub;
+          pub.init("192.168.5.165",8080,1,TransportKind::UDPv4,testTypes::Test);
+          std::stringstream ss;
+          ss << pub.getParticipant()->guid();
+          replay.guid(ss.str());
+          std::this_thread::sleep_for(std::chrono::seconds(5));
+          pub.SendMsg(replay);
+        }
+
+      }
+    }
+  }
+  else if(reader->get_topicdescription()->get_name() == "ReplayTopic")
+  {
+    Replay msg;
+    while (reader->read_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
+    {
+      if (info.valid_data)
+      {
+        std::cout << msg.guid() << "--------->replayCount:" << ++m_replays << std::endl;
       }
     }
   }
@@ -253,7 +278,8 @@ bool MainSubscriber::init(
     return false;
   }
   return
-  initSubType("TargetTopic","Target",new TargetPubSubType,&m_listener);
+  initSubType("TargetTopic","Target",new TargetPubSubType,&m_listener) &&
+  initSubType("ReplayTopic","Replay",new ReplayPubSubType,&m_listener);
 }
 bool MainSubscriber::initSubType(const std::string &topicName, const std::string & typeName, TopicDataType *dataType, DataReaderListener * listener)
 {
@@ -323,8 +349,7 @@ bool MainSubscriber::initSubType(const std::string &topicName, const std::string
     // 所有权
     readerQos.ownership().kind = SHARED_OWNERSHIP_QOS;
     break;
-  case testTypes::UDPCrossNetwork:
-    // UDP跨网络
+  case testTypes::Test:
     break;
   default:
     break;

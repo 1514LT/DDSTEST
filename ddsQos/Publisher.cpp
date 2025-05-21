@@ -115,7 +115,6 @@ bool MainPublisher::init(testTypes type)
   #else
   m_domain_participant = DomainParticipantFactory::get_instance()->create_participant(0,participantQos,&listener_);
   #endif
-
   if(!m_domain_participant)
   {
     return false;
@@ -274,7 +273,9 @@ bool MainPublisher::init(
     publisherQos.partition().push_back("partitionB");
   }
   m_publisher = m_domain_participant->create_publisher(publisherQos,nullptr);
-  return initPubType("TargetTopic","Target",new TargetPubSubType,&m_listener);
+  return 
+  initPubType("TargetTopic","Target",new TargetPubSubType,&m_listener) &&
+  initPubType("ReplayTopic","Replay",new ReplayPubSubType,&m_listener);
 }
 bool MainPublisher::initPubType(const std::string & topicName, const std::string & typeName, TopicDataType * dataType, DataWriterListener * listener)
 {
@@ -345,11 +346,8 @@ bool MainPublisher::initPubType(const std::string & topicName, const std::string
     // 所有权
     writer_qos.ownership().kind = SHARED_OWNERSHIP_QOS;
     break;
-  case testTypes::UDPCrossNetwork:
-    // UDP跨网络
-    {
-
-    }
+  case testTypes::Test:
+    break;
   case testTypes::Default:
     break;
   default:
@@ -370,6 +368,10 @@ bool MainPublisher::initPubType(const std::string & topicName, const std::string
   return true;
 }
 
+DomainParticipant* MainPublisher::getParticipant()
+{
+  return m_domain_participant;
+}
 bool MainPublisher::TargetMatched()
 {
   return m_listener.getMatched() > 0;
@@ -378,6 +380,10 @@ bool MainPublisher::TargetMatched()
 bool MainPublisher::PublishTarget(Target &target)
 {
   return !m_writers.empty() && m_writers[0].second->write(&target);
+}
+bool MainPublisher::PublishReplay(Replay &replay)
+{
+  return !m_writers.empty() && m_writers[1].second->write(&replay);
 }
 void MainPublisher::SendMsg()
 {
@@ -388,5 +394,32 @@ void MainPublisher::SendMsg()
 }
 void MainPublisher::SendMsg(Target& target)
 {
-  PublishTarget(target);
+  int index = 0;
+  std::cout << "send msg\n"; 
+  if(m_type == testTypes::Test)
+  {
+    target.index(index);
+    target.message("hello world");
+    target.replayFlag(1);
+    PublishTarget(target);
+  }
+  else
+  {
+    for(int i=0;i<200;i++)
+    {
+      target.index(index);
+      target.message("hello world");
+      target.replayFlag(0);
+      PublishTarget(target);
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      index++;
+    }
+  }
+  
+  std::cout << "send over\n";
+}
+void MainPublisher::SendMsg(Replay& replay)
+{
+  PublishReplay(replay);
+  std::cout << "send over" << std::endl;
 }

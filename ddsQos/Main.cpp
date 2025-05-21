@@ -10,9 +10,9 @@ void start(Function&& f, Args&&... args)
   std::thread(std::forward<Function>(f), std::forward<Args>(args)...).join();
 }
 private:
-  Discover discover;
-  MainPublisher pub;
-  MainSubscriber sub;
+  Discover* discover;
+  MainPublisher* pub;
+  MainSubscriber* sub;
   std::vector<std::shared_ptr<MainSubscriber>> vt_sub;
 public:
   testTypes m_type;
@@ -29,21 +29,28 @@ public:
   }
   void RunDiscover()
   {
-    // discover.init();
-    discover.init("192.168.5.165",8080,1,TransportKind::UDPv4,false,"127.0.0.1",8080,1);
+    discover = new Discover;
+    discover->init("192.168.5.165",9090,1,TransportKind::UDPv4,false,"127.0.0.1",9090,1);
   }
   void RunPublisher()
   {
-    pub.init("192.168.5.165",8080,1,TransportKind::UDPv4,m_type);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    pub = new MainPublisher;
+    pub->pair_topics["Target"] = new TargetPubSubType;
+    pub->init("192.168.5.165",9090,1,TransportKind::UDPv4,m_type);
     Target target;
     target.index(0);
     target.message("hello world");
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     if(m_type == testTypes::Test)
     {
       target.replayFlag(1);
     }
-    pub.SendMsg(target);
+    while(pub->TargetMatched())
+    {
+      std::cout << "----->TargetMatched" << std::endl;
+      pub->SendMsg(target);
+      break;
+    }
     if(m_type == testTypes::Durability || m_type == testTypes::ResourceLimits)
     {
       while (1)
@@ -51,25 +58,30 @@ public:
         std::this_thread::sleep_for(std::chrono::seconds(1));
       }
     }
-    else if(m_type == testTypes::Test)
+    if(m_type == testTypes::Test)
     {
-      MainSubscriber sub;
-      sub.init("192.168.5.165",8080,1,TransportKind::UDPv4,testTypes::Test);
+      MainSubscriber test_sub;
+      test_sub.pair_topics["Replay"] = new ReplayPubSubType;
+      
+      test_sub.init("192.168.5.165",9090,1,TransportKind::UDPv4,testTypes::Test);
       while (1)
       {
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
       }
     }
     std::cout << "pub exit\n";
+    delete pub;
   }
   void RunSubscriber()
   {
-    // sub.init(m_type);
-    sub.init("192.168.5.165",8080,1,TransportKind::UDPv4,m_type);
+    sub = new MainSubscriber;
+    sub->pair_topics["Target"] = new TargetPubSubType;
+    sub->init("192.168.5.165",9090,1,TransportKind::UDPv4,m_type);
     while (1)
     {
       std::this_thread::sleep_for(std::chrono::seconds(2));
     }
+    delete sub;
   }
 };
 

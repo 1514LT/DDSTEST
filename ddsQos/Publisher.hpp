@@ -30,14 +30,13 @@ using IPLocator = eprosima::fastrtps::rtps::IPLocator;
 
 class MainPublisherListenner :public DataWriterListener
 {
-private:
+public:
   std::atomic_int m_matched;
 public:
   MainPublisherListenner();
   ~MainPublisherListenner();
 public:
   void on_publication_matched(DataWriter* writer,const PublicationMatchedStatus& info)override;
-  int getMatched();
   void on_offered_deadline_missed(DataWriter* writer,const OfferedDeadlineMissedStatus& status) override;
 };
 
@@ -52,6 +51,8 @@ private:
   std::vector<std::pair<Topic*,DataWriter*> > m_writers;
   MainPublisherListenner m_listener;
   testTypes m_type;
+public:
+  std::map<std::string,TopicDataType*> pair_topics;
 public:
   MainPublisher();
   ~MainPublisher();

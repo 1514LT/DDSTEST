@@ -36,6 +36,7 @@ void MainPublisher::PubListener::on_participant_discovery(
 }
 
 MainPublisherListenner::MainPublisherListenner()
+:m_matched(0)
 {
 }
 
@@ -67,10 +68,7 @@ void MainPublisherListenner::on_offered_deadline_missed(DataWriter* writer,const
   std::cout << "Deadline missed for instance: " << status.last_instance_handle << std::endl;
 }
 
-int MainPublisherListenner::getMatched()
-{
-  return m_matched.load();
-}
+
 
 MainPublisher::MainPublisher()
 :m_domain_participant(nullptr),
@@ -113,7 +111,7 @@ bool MainPublisher::init(testTypes type)
   participantQos.wire_protocol().builtin.discovery_config.static_edp_xml_config("file://publisher.xml");
   m_domain_participant = DomainParticipantFactory::get_instance()->create_participant(0, participantQos);
   #else
-  m_domain_participant = DomainParticipantFactory::get_instance()->create_participant(0,participantQos,&listener_);
+  m_domain_participant = DomainParticipantFactory::get_instance()->create_participant(0,participantQos);
   #endif
   if(!m_domain_participant)
   {
@@ -273,9 +271,12 @@ bool MainPublisher::init(
     publisherQos.partition().push_back("partitionB");
   }
   m_publisher = m_domain_participant->create_publisher(publisherQos,nullptr);
-  return 
-  initPubType("TargetTopic","Target",new TargetPubSubType,&m_listener) &&
-  initPubType("ReplayTopic","Replay",new ReplayPubSubType,&m_listener);
+  for(auto pair:pair_topics)
+  {
+    std::cout << pair.first << std::endl;
+    initPubType(pair.first+"Topic",pair.first,pair.second,&m_listener);
+  }
+  return true;
 }
 bool MainPublisher::initPubType(const std::string & topicName, const std::string & typeName, TopicDataType * dataType, DataWriterListener * listener)
 {
@@ -374,7 +375,7 @@ DomainParticipant* MainPublisher::getParticipant()
 }
 bool MainPublisher::TargetMatched()
 {
-  return m_listener.getMatched() > 0;
+  return m_listener.m_matched > 0;
 }
 
 bool MainPublisher::PublishTarget(Target &target)
@@ -383,7 +384,8 @@ bool MainPublisher::PublishTarget(Target &target)
 }
 bool MainPublisher::PublishReplay(Replay &replay)
 {
-  return !m_writers.empty() && m_writers[1].second->write(&replay);
+  std::cout << "---->send Replay msg" << std::endl;
+  return !m_writers.empty() && m_writers[0].second->write(&replay);
 }
 void MainPublisher::SendMsg()
 {

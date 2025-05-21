@@ -1,6 +1,8 @@
 #include "Subscriber.hpp"
 
 MainSubListener::MainSubListener()
+:m_replays(0),
+m_samples(0)
 {
 }
 
@@ -13,12 +15,12 @@ void MainSubListener::on_subscription_matched(DataReader * reader, const Subscri
   if(info.current_count_change == 1)
   {
       std::cout << "Subscriber matched, topic:" + reader->get_topicdescription()->get_name() + ", count:" + std::to_string(info.current_count) << std::endl;
-      std::cout << "Last matched publisher handle:" << info.last_publication_handle << std::endl;
+      // std::cout << "Last matched publisher handle:" << info.last_publication_handle << std::endl;
   }
   else if(info.current_count_change == -1)
   {
       std::cout << "Subscriber unmatched, topic:" + reader->get_topicdescription()->get_name() + ", count:" + std::to_string(info.current_count) << std::endl;
-      std::cout << "Last unmatched publisher handle:" << info.last_publication_handle << std::endl;
+      // std::cout << "Last unmatched publisher handle:" << info.last_publication_handle << std::endl;
   }
   else 
   {
@@ -32,8 +34,7 @@ void MainSubListener::on_data_available(DataReader * reader)
   if (reader->get_topicdescription()->get_name() == "TargetTopic")
   {
     Target msg;
-    while (reader->read_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
-    // while (reader->read_next_sample(&msg,&info) == ReturnCode_t::RETCODE_OK)
+    while (reader->take_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
     {
       if (info.valid_data)
       {
@@ -45,12 +46,17 @@ void MainSubListener::on_data_available(DataReader * reader)
           Replay replay;
           replay.recvFlag(1);
           MainPublisher pub;
-          pub.init("192.168.5.165",8080,1,TransportKind::UDPv4,testTypes::Test);
+          pub.pair_topics["Replay"] = new ReplayPubSubType;
+          pub.init("192.168.5.165",9090,1,TransportKind::UDPv4,testTypes::Test);
           std::stringstream ss;
           ss << pub.getParticipant()->guid();
           replay.guid(ss.str());
-          std::this_thread::sleep_for(std::chrono::seconds(5));
-          pub.SendMsg(replay);
+          std::this_thread::sleep_for(std::chrono::seconds(1));
+          while (pub.TargetMatched())
+          {
+            pub.SendMsg(replay);
+            break;
+          }
         }
 
       }
@@ -59,7 +65,7 @@ void MainSubListener::on_data_available(DataReader * reader)
   else if(reader->get_topicdescription()->get_name() == "ReplayTopic")
   {
     Replay msg;
-    while (reader->read_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
+    while (reader->take_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
     {
       if (info.valid_data)
       {
@@ -277,10 +283,17 @@ bool MainSubscriber::init(
   {
     return false;
   }
-  return
-  initSubType("TargetTopic","Target",new TargetPubSubType,&m_listener) &&
-  initSubType("ReplayTopic","Replay",new ReplayPubSubType,&m_listener);
+  // return
+  // initSubType("TargetTopic","Target",new TargetPubSubType,&m_listener) &&
+  // initSubType("ReplayTopic","Replay",new ReplayPubSubType,&m_listener);
+  for(auto pair:pair_topics)
+  {
+    std::cout << pair.first << std::endl;
+    initSubType(pair.first+"Topic",pair.first,pair.second,&m_listener);
+  }
+  return true;
 }
+
 bool MainSubscriber::initSubType(const std::string &topicName, const std::string & typeName, TopicDataType *dataType, DataReaderListener * listener)
 {
   m_type.emplace_back(dataType);

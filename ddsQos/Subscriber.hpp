@@ -64,6 +64,8 @@ private:
   MainSubListener m_listener;
   testTypes m_testType;
 public:
+  std::map<std::string,TopicDataType*> pair_topics;
+public:
   MainSubscriber();
   ~MainSubscriber();
   bool init(testTypes type = testTypes::Default);

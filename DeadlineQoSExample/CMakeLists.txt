@@ -13,12 +13,12 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.20)
-
+set(CMAKE_PREFIX_PATH "/usr/local/lib")
 project(DeadlineQoSExample VERSION 1 LANGUAGES CXX)
 
 # Find requirements
 if(NOT fastcdr_FOUND)
-    find_package(fastcdr 2 REQUIRED)
+    #find_package(fastcdr 2 REQUIRED)
 endif()
 
 if(NOT foonathan_memory_FOUND)
@@ -26,7 +26,7 @@ if(NOT foonathan_memory_FOUND)
 endif()
 
 if(NOT fastrtps_FOUND)
-    find_package(fastrtps 2.12 REQUIRED)
+    #find_package(fastrtps 2.12 REQUIRED)
 endif()
 
 #Check C++11
@@ -46,7 +46,7 @@ target_compile_definitions(DDSDeadlineQoSExample PRIVATE
     $<$<AND:$<NOT:$<BOOL:${WIN32}>>,$<STREQUAL:"${CMAKE_BUILD_TYPE}","Debug">>:__DEBUG>
     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
     )
-target_link_libraries(DDSDeadlineQoSExample fastrtps fastcdr foonathan_memory)
+target_link_libraries(DDSDeadlineQoSExample -lfastrtps -lfastcdr foonathan_memory)
 if(UNIX AND NOT(QNXNTO) AND NOT(ANDROID))
     target_link_libraries(DDSDeadlineQoSExample pthread)
 endif()

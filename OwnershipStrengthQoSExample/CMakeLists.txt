@@ -18,7 +18,7 @@ project(OwnershipStrengthQoSExample VERSION 1 LANGUAGES CXX)
 
 # Find requirements
 if(NOT fastcdr_FOUND)
-    find_package(fastcdr 2 REQUIRED)
+    #find_package(fastcdr 2 REQUIRED)
 endif()
 
 if(NOT foonathan_memory_FOUND)
@@ -26,7 +26,7 @@ if(NOT foonathan_memory_FOUND)
 endif()
 
 if(NOT fastrtps_FOUND)
-    find_package(fastrtps 2.12 REQUIRED)
+    #find_package(fastrtps 2.12 REQUIRED)
 endif()
 
 #Check C++11
@@ -46,7 +46,7 @@ target_compile_definitions(DDSOwnershipStrengthQoSExample PRIVATE
     $<$<AND:$<NOT:$<BOOL:${WIN32}>>,$<STREQUAL:"${CMAKE_BUILD_TYPE}","Debug">>:__DEBUG>
     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
     )
-target_link_libraries(DDSOwnershipStrengthQoSExample fastrtps fastcdr foonathan_memory)
+target_link_libraries(DDSOwnershipStrengthQoSExample -lfastrtps -lfastcdr foonathan_memory)
 install(TARGETS DDSOwnershipStrengthQoSExample
     RUNTIME DESTINATION examples/cpp/dds/OwnershipStrengthQoSExample/${BIN_INSTALL_DIR}
     )

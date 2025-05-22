@@ -15,14 +15,14 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(DiscoveryServerExample VERSION 1 LANGUAGES CXX)
-
+include_directories(/usr/local/include/fastdds/thirdparty/optionparser)
 # Find requirements
 if(NOT fastcdr_FOUND)
-    find_package(fastcdr 2 REQUIRED)
+    #find_package(fastcdr 2 REQUIRED)
 endif()
 
 if(NOT fastrtps_FOUND)
-    find_package(fastrtps 2.12 REQUIRED)
+    #find_package(fastrtps 2.12 REQUIRED)
 endif()
 
 #Check C++11
@@ -44,6 +44,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     $<$<AND:$<NOT:$<BOOL:${WIN32}>>,$<STREQUAL:"${CMAKE_BUILD_TYPE}","Debug">>:__DEBUG>
     $<$<BOOL:${INTERNAL_DEBUG}>:__INTERNALDEBUG> # Internal debug activated.
 )
-target_link_libraries(${PROJECT_NAME} fastrtps fastcdr fastdds::optionparser)
+target_link_libraries(${PROJECT_NAME} -lfastrtps -lfastcdr)
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION examples/cpp/dds/${PROJECT_NAME}/${BIN_INSTALL_DIR})

@@ -1,5 +1,2 @@
-lib/
-bin/
-output/
-*.swp
-*.swo
+build
+.vscode

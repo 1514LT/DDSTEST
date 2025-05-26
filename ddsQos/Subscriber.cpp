@@ -47,7 +47,8 @@ void MainSubListener::on_data_available(DataReader * reader)
           replay.recvFlag(1);
           MainPublisher pub;
           pub.pair_topics["Replay"] = new ReplayPubSubType;
-          pub.init("192.168.5.165",9090,1,TransportKind::UDPv4,testTypes::Test);
+          
+          pub.init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,testTypes::Test);
           std::stringstream ss;
           ss << pub.getParticipant()->guid();
           replay.guid(ss.str());

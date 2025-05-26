@@ -30,13 +30,13 @@ public:
   void RunDiscover()
   {
     discover = new Discover;
-    discover->init("192.168.5.165",9090,1,TransportKind::UDPv4,false,"127.0.0.1",9090,1);
+    discover->init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,false,"127.0.0.1",9090,1);
   }
   void RunPublisher()
   {
     pub = new MainPublisher;
     pub->pair_topics["Target"] = new TargetPubSubType;
-    pub->init("192.168.5.165",9090,1,TransportKind::UDPv4,m_type);
+    pub->init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,m_type);
     Target target;
     target.index(0);
     target.message("hello world");
@@ -63,7 +63,7 @@ public:
       MainSubscriber test_sub;
       test_sub.pair_topics["Replay"] = new ReplayPubSubType;
       
-      test_sub.init("192.168.5.165",9090,1,TransportKind::UDPv4,testTypes::Test);
+      test_sub.init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,testTypes::Test);
       while (1)
       {
         std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -76,7 +76,7 @@ public:
   {
     sub = new MainSubscriber;
     sub->pair_topics["Target"] = new TargetPubSubType;
-    sub->init("192.168.5.165",9090,1,TransportKind::UDPv4,m_type);
+    sub->init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,m_type);
     while (1)
     {
       std::this_thread::sleep_for(std::chrono::seconds(2));

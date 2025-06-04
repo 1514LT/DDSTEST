@@ -405,6 +405,13 @@ void MainPublisher::SendMsg(Target& target)
     target.replayFlag(1);
     PublishTarget(target);
   }
+  else if(m_type == testTypes::Default)
+  {
+    target.index(index);
+    target.message("hello world");
+    target.replayFlag(0);
+    PublishTarget(target);
+  }
   else
   {
     for(int i=0;i<200;i++)
@@ -413,7 +420,7 @@ void MainPublisher::SendMsg(Target& target)
       target.message("hello world");
       target.replayFlag(0);
       PublishTarget(target);
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      // std::this_thread::sleep_for(std::chrono::milliseconds(10));
       index++;
     }
   }

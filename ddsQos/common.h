@@ -39,6 +39,30 @@ enum class TransportKind
 };
 namespace JRLC
 {
+  /*获取毫秒时间*/
+  inline long long getCurrentTimeMillis()
+  {
+    auto now = std::chrono::system_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+    return duration.count();
+  }
+
+  /*毫秒时间格式化*/
+  inline std::string millisecondsToDateTime(long long milliseconds)
+  {
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::milliseconds(milliseconds));
+    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::milliseconds(milliseconds) - seconds);
+
+    std::time_t tt = seconds.count();
+    std::tm* gm = std::localtime(&tt);
+
+    std::stringstream ss;
+    ss << std::put_time(gm, "%Y-%m-%d %H:%M:%S");
+    ss << '.' << std::setfill('0') << std::setw(3) << millis.count();
+
+    return ss.str();
+  }
+
   inline std::string getIP()
   {
     std::string Path = std::getenv("PWD") + std::string("/../DiscoverIP");

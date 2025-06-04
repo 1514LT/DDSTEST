@@ -40,16 +40,20 @@ public:
     Target target;
     target.index(0);
     target.message("hello world");
-    std::this_thread::sleep_for(std::chrono::seconds(1));
     if(m_type == testTypes::Test)
     {
       target.replayFlag(1);
     }
-    while(pub->TargetMatched())
+    while(1)
     {
-      std::cout << "----->TargetMatched" << std::endl;
-      pub->SendMsg(target);
-      break;
+      if(pub->TargetMatched())
+      {
+        std::cout << "----->TargetMatched" << std::endl;
+        std::cout << "send timestamp:" << JRLC::millisecondsToDateTime(JRLC::getCurrentTimeMillis()) << std::endl;
+        pub->SendMsg(target);
+        break;
+      }
+      std::this_thread::sleep_for(std::chrono::microseconds(10));
     }
     if(m_type == testTypes::Durability || m_type == testTypes::ResourceLimits)
     {

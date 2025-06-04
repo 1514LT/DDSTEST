@@ -40,6 +40,7 @@ void MainSubListener::on_data_available(DataReader * reader)
       {
         std::cout << "index:" << msg.index() << std::endl;
         std::cout << "message:" << msg.message() << std::endl;
+        std::cout << "recv timestamp:" << JRLC::millisecondsToDateTime(JRLC::getCurrentTimeMillis()) << std::endl;
         // replay
         if(msg.replayFlag())
         {

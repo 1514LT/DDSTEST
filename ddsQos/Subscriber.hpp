@@ -40,6 +40,8 @@ class MainSubListener : public DataReaderListener
 private:
   std::atomic_int m_samples;
   std::atomic_int m_replays;
+  std::string startTime;
+  std::string endTime;
 public:
   MainSubListener();
   ~MainSubListener();

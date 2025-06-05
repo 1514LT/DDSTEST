@@ -1,0 +1,8 @@
+project(BigDate)
+cmake_minimum_required(VERSION 3.10)
+set(CMAKE_CXX_STANDARD 11)
+include_directories(${CMAKE_SOURCE_DIR})
+add_executable(sender sender.cpp)
+add_executable(receiver receiver.cpp)
+target_link_libraries(sender pthread)
+target_link_libraries(receiver pthread)

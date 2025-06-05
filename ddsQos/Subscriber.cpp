@@ -75,6 +75,28 @@ void MainSubListener::on_data_available(DataReader * reader)
       }
     }
   }
+  else if(reader->get_topicdescription()->get_name() == "DataChunkTopic")
+  {
+    DataChunk msg;
+    while (reader->take_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
+    {
+      if (info.valid_data)
+      {
+        std::cout << "DataChunk id:" << (int)msg.id() << std::endl;
+        if((int)msg.flag()==1)
+        {
+          startTime = JRLC::millisecondsToDateTime(JRLC::getCurrentTimeMillis());
+          std::cout << "startTime:" << startTime << std::endl;
+        }
+        if((int)msg.flag()==2)
+        {
+          endTime = JRLC::millisecondsToDateTime(JRLC::getCurrentTimeMillis());
+          std::cout << "startTime:" << startTime << std::endl;
+          std::cout << "endTime:"  << endTime << std::endl;
+        }
+      }
+    }
+  }
 }
 
 void MainSubListener::on_requested_deadline_missed(DataReader* reader,const RequestedDeadlineMissedStatus& status)
@@ -365,6 +387,15 @@ bool MainSubscriber::initSubType(const std::string &topicName, const std::string
     readerQos.ownership().kind = SHARED_OWNERSHIP_QOS;
     break;
   case testTypes::Test:
+    break;
+  case testTypes::BigData:
+    readerQos.durability().kind = TRANSIENT_LOCAL_DURABILITY_QOS;
+    readerQos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+    readerQos.history().kind = KEEP_ALL_HISTORY_QOS;
+    readerQos.history().depth = 1000;
+    readerQos.resource_limits().max_samples = 1000;
+    readerQos.resource_limits().max_instances = 1;
+    readerQos.resource_limits().max_samples_per_instance = 1000;
     break;
   default:
     break;

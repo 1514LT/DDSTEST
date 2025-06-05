@@ -30,6 +30,9 @@ constexpr uint32_t Target_max_key_cdr_typesize {0UL};
 constexpr uint32_t Replay_max_cdr_typesize {268UL};
 constexpr uint32_t Replay_max_key_cdr_typesize {0UL};
 
+constexpr uint32_t DataChunk_max_cdr_typesize {129UL};
+constexpr uint32_t DataChunk_max_key_cdr_typesize {0UL};
+
 
 namespace eprosima {
 namespace fastcdr {
@@ -48,6 +51,12 @@ eProsima_user_DllExport void serialize_key(
 eProsima_user_DllExport void serialize_key(
         eprosima::fastcdr::Cdr& scdr,
         const Replay& data);
+
+
+
+eProsima_user_DllExport void serialize_key(
+        eprosima::fastcdr::Cdr& scdr,
+        const DataChunk& data);
 
 
 } // namespace fastcdr

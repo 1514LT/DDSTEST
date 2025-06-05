@@ -349,6 +349,15 @@ bool MainPublisher::initPubType(const std::string & topicName, const std::string
     break;
   case testTypes::Test:
     break;
+  case testTypes::BigData:
+    writer_qos.durability().kind = TRANSIENT_LOCAL_DURABILITY_QOS;
+    writer_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+    writer_qos.history().kind = KEEP_ALL_HISTORY_QOS;
+    writer_qos.history().depth = 1000;
+    writer_qos.resource_limits().max_samples = 1000;
+    writer_qos.resource_limits().max_instances = 1;
+    writer_qos.resource_limits().max_samples_per_instance = 1000;
+    break;
   case testTypes::Default:
     break;
   default:
@@ -431,4 +440,10 @@ void MainPublisher::SendMsg(Replay& replay)
 {
   PublishReplay(replay);
   std::cout << "send over" << std::endl;
+}
+
+void MainPublisher::SendMsg(DataChunk& dataChunk)
+{
+  m_writers[0].second->write(&dataChunk);
+  return;
 }

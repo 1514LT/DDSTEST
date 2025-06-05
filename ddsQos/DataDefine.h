@@ -318,6 +318,162 @@ private:
 
 };
 
+
+/*!
+ * @brief This class represents the structure DataChunk defined by the user in the IDL file.
+ * @ingroup DataDefine
+ */
+class DataChunk
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport DataChunk();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~DataChunk();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object DataChunk that will be copied.
+     */
+    eProsima_user_DllExport DataChunk(
+            const DataChunk& x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object DataChunk that will be copied.
+     */
+    eProsima_user_DllExport DataChunk(
+            DataChunk&& x) noexcept;
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object DataChunk that will be copied.
+     */
+    eProsima_user_DllExport DataChunk& operator =(
+            const DataChunk& x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object DataChunk that will be copied.
+     */
+    eProsima_user_DllExport DataChunk& operator =(
+            DataChunk&& x) noexcept;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x DataChunk object to compare.
+     */
+    eProsima_user_DllExport bool operator ==(
+            const DataChunk& x) const;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x DataChunk object to compare.
+     */
+    eProsima_user_DllExport bool operator !=(
+            const DataChunk& x) const;
+
+    /*!
+     * @brief This function sets a value in member id
+     * @param _id New value for member id
+     */
+    eProsima_user_DllExport void id(
+            uint64_t _id);
+
+    /*!
+     * @brief This function returns the value of member id
+     * @return Value of member id
+     */
+    eProsima_user_DllExport uint64_t id() const;
+
+    /*!
+     * @brief This function returns a reference to member id
+     * @return Reference to member id
+     */
+    eProsima_user_DllExport uint64_t& id();
+
+
+    /*!
+     * @brief This function sets a value in member total_chunks
+     * @param _total_chunks New value for member total_chunks
+     */
+    eProsima_user_DllExport void total_chunks(
+            uint64_t _total_chunks);
+
+    /*!
+     * @brief This function returns the value of member total_chunks
+     * @return Value of member total_chunks
+     */
+    eProsima_user_DllExport uint64_t total_chunks() const;
+
+    /*!
+     * @brief This function returns a reference to member total_chunks
+     * @return Reference to member total_chunks
+     */
+    eProsima_user_DllExport uint64_t& total_chunks();
+
+
+    /*!
+     * @brief This function copies the value in member payload
+     * @param _payload New value to be copied in member payload
+     */
+    eProsima_user_DllExport void payload(
+            const std::vector<uint8_t>& _payload);
+
+    /*!
+     * @brief This function moves the value in member payload
+     * @param _payload New value to be moved in member payload
+     */
+    eProsima_user_DllExport void payload(
+            std::vector<uint8_t>&& _payload);
+
+    /*!
+     * @brief This function returns a constant reference to member payload
+     * @return Constant reference to member payload
+     */
+    eProsima_user_DllExport const std::vector<uint8_t>& payload() const;
+
+    /*!
+     * @brief This function returns a reference to member payload
+     * @return Reference to member payload
+     */
+    eProsima_user_DllExport std::vector<uint8_t>& payload();
+
+
+    /*!
+     * @brief This function sets a value in member flag
+     * @param _flag New value for member flag
+     */
+    eProsima_user_DllExport void flag(
+            uint8_t _flag);
+
+    /*!
+     * @brief This function returns the value of member flag
+     * @return Value of member flag
+     */
+    eProsima_user_DllExport uint8_t flag() const;
+
+    /*!
+     * @brief This function returns a reference to member flag
+     * @return Reference to member flag
+     */
+    eProsima_user_DllExport uint8_t& flag();
+
+private:
+
+    uint64_t m_id{0};
+    uint64_t m_total_chunks{0};
+    std::vector<uint8_t> m_payload;
+    uint8_t m_flag{0};
+
+};
+
 #endif // _FAST_DDS_GENERATED_DATADEFINE_H_
 
 

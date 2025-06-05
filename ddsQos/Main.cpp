@@ -32,6 +32,40 @@ public:
     discover = new Discover;
     discover->init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,false,"127.0.0.1",9090,1);
   }
+  void RunPubDataChunk()
+  {
+    const size_t chunk_size = 1024 * 100;
+    const size_t total_size = 1024 * 1024 * 1024;
+    const size_t total_chunks = total_size / chunk_size;
+    pub = new MainPublisher;
+    pub->pair_topics["DataChunk"] = new DataChunkPubSubType;
+    pub->init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,m_type);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    for(size_t i = 0; i < total_chunks; i++)
+    {
+      DataChunk chunk;
+      if(i == 0)
+      {
+        std::cout << "start\n";
+        chunk.flag(1);
+      }
+      if(i == total_chunks -1)
+      {
+        std::cout << "end\n";
+        chunk.flag(2);
+      }
+      chunk.id(i);
+      chunk.total_chunks(total_chunks);
+      chunk.payload().resize(chunk_size);
+      std::fill(chunk.payload().begin(), chunk.payload().end(), 0xAA); // 填充数据
+      pub->SendMsg(chunk);
+    }
+    while (1)
+    {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    
+  }
   void RunPublisher()
   {
     pub = new MainPublisher;
@@ -79,7 +113,14 @@ public:
   void RunSubscriber()
   {
     sub = new MainSubscriber;
-    sub->pair_topics["Target"] = new TargetPubSubType;
+    if(m_type == testTypes::BigData)
+    {
+      sub->pair_topics["DataChunk"] = new DataChunkPubSubType;
+    }
+    else
+    {
+      sub->pair_topics["Target"] = new TargetPubSubType;
+    }
     sub->init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,m_type);
     while (1)
     {
@@ -100,6 +141,13 @@ int main(int argc, char const *argv[])
   std::string node = argv[1];
   std::string qosType = argv[2];
   switch (qosType[0]) {
+    case 'B':
+    if(qosType =="BigData")
+    {
+      std::cout << "BigData" << std::endl;
+      main.m_type = testTypes::BigData;
+    }
+    break;
     case 'D':
       if (qosType == "Durability") {
         std::cout << "Durability" << std::endl;
@@ -122,6 +170,9 @@ int main(int argc, char const *argv[])
       } else if (qosType == "ResourceLimits") {
         std::cout << "ResourceLimits" << std::endl;
         main.m_type = testTypes::ResourceLimits;
+      } else if (qosType == "BigData") { 
+        std::cout << "BigData" << std::endl;
+        main.m_type = testTypes::BigData;
       }
       break;
     case 'L':
@@ -164,7 +215,14 @@ int main(int argc, char const *argv[])
   }
   else if(node == "pub")
   {
-    main.RunPublisher();
+    if(main.m_type == testTypes::BigData)
+    {
+      main.RunPubDataChunk();
+    }
+    else
+    {
+      main.RunPublisher();
+    }
   }
   else if(node == "sub")
   {

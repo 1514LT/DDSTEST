@@ -9,3 +9,9 @@ struct Replay
     octet recvFlag;
     string guid;
 };
+struct DataChunk {
+    unsigned long long id;                   // 分片编号
+    unsigned long long total_chunks;         // 总分片数
+    sequence<octet> payload;       // 分片内容（如每片64KB）
+    octet flag;
+};

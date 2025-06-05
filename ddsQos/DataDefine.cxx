@@ -317,6 +317,197 @@ std::string& Replay::guid()
 }
 
 
+
+
+DataChunk::DataChunk()
+{
+}
+
+DataChunk::~DataChunk()
+{
+}
+
+DataChunk::DataChunk(
+        const DataChunk& x)
+{
+    m_id = x.m_id;
+    m_total_chunks = x.m_total_chunks;
+    m_payload = x.m_payload;
+    m_flag = x.m_flag;
+}
+
+DataChunk::DataChunk(
+        DataChunk&& x) noexcept
+{
+    m_id = x.m_id;
+    m_total_chunks = x.m_total_chunks;
+    m_payload = std::move(x.m_payload);
+    m_flag = x.m_flag;
+}
+
+DataChunk& DataChunk::operator =(
+        const DataChunk& x)
+{
+
+    m_id = x.m_id;
+    m_total_chunks = x.m_total_chunks;
+    m_payload = x.m_payload;
+    m_flag = x.m_flag;
+    return *this;
+}
+
+DataChunk& DataChunk::operator =(
+        DataChunk&& x) noexcept
+{
+
+    m_id = x.m_id;
+    m_total_chunks = x.m_total_chunks;
+    m_payload = std::move(x.m_payload);
+    m_flag = x.m_flag;
+    return *this;
+}
+
+bool DataChunk::operator ==(
+        const DataChunk& x) const
+{
+    return (m_id == x.m_id &&
+           m_total_chunks == x.m_total_chunks &&
+           m_payload == x.m_payload &&
+           m_flag == x.m_flag);
+}
+
+bool DataChunk::operator !=(
+        const DataChunk& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function sets a value in member id
+ * @param _id New value for member id
+ */
+void DataChunk::id(
+        uint64_t _id)
+{
+    m_id = _id;
+}
+
+/*!
+ * @brief This function returns the value of member id
+ * @return Value of member id
+ */
+uint64_t DataChunk::id() const
+{
+    return m_id;
+}
+
+/*!
+ * @brief This function returns a reference to member id
+ * @return Reference to member id
+ */
+uint64_t& DataChunk::id()
+{
+    return m_id;
+}
+
+
+/*!
+ * @brief This function sets a value in member total_chunks
+ * @param _total_chunks New value for member total_chunks
+ */
+void DataChunk::total_chunks(
+        uint64_t _total_chunks)
+{
+    m_total_chunks = _total_chunks;
+}
+
+/*!
+ * @brief This function returns the value of member total_chunks
+ * @return Value of member total_chunks
+ */
+uint64_t DataChunk::total_chunks() const
+{
+    return m_total_chunks;
+}
+
+/*!
+ * @brief This function returns a reference to member total_chunks
+ * @return Reference to member total_chunks
+ */
+uint64_t& DataChunk::total_chunks()
+{
+    return m_total_chunks;
+}
+
+
+/*!
+ * @brief This function copies the value in member payload
+ * @param _payload New value to be copied in member payload
+ */
+void DataChunk::payload(
+        const std::vector<uint8_t>& _payload)
+{
+    m_payload = _payload;
+}
+
+/*!
+ * @brief This function moves the value in member payload
+ * @param _payload New value to be moved in member payload
+ */
+void DataChunk::payload(
+        std::vector<uint8_t>&& _payload)
+{
+    m_payload = std::move(_payload);
+}
+
+/*!
+ * @brief This function returns a constant reference to member payload
+ * @return Constant reference to member payload
+ */
+const std::vector<uint8_t>& DataChunk::payload() const
+{
+    return m_payload;
+}
+
+/*!
+ * @brief This function returns a reference to member payload
+ * @return Reference to member payload
+ */
+std::vector<uint8_t>& DataChunk::payload()
+{
+    return m_payload;
+}
+
+
+/*!
+ * @brief This function sets a value in member flag
+ * @param _flag New value for member flag
+ */
+void DataChunk::flag(
+        uint8_t _flag)
+{
+    m_flag = _flag;
+}
+
+/*!
+ * @brief This function returns the value of member flag
+ * @return Value of member flag
+ */
+uint8_t DataChunk::flag() const
+{
+    return m_flag;
+}
+
+/*!
+ * @brief This function returns a reference to member flag
+ * @return Reference to member flag
+ */
+uint8_t& DataChunk::flag()
+{
+    return m_flag;
+}
+
+
 // Include auxiliary functions like for serializing/deserializing.
 #include "DataDefineCdrAux.ipp"
 

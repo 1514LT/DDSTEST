@@ -71,6 +71,7 @@ public:
   void SendMsg();
   void SendMsg(Target& target);
   void SendMsg(Replay& replay);
+  void SendMsg(DataChunk& dataChunk);
   DomainParticipant* getParticipant();
     class PubListener : public eprosima::fastdds::dds::DomainParticipantListener
     {

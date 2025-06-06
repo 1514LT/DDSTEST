@@ -474,6 +474,227 @@ private:
 
 };
 
+
+/*!
+ * @brief This class represents the structure GrpcInfo defined by the user in the IDL file.
+ * @ingroup DataDefine
+ */
+class GrpcInfo
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport GrpcInfo();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~GrpcInfo();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object GrpcInfo that will be copied.
+     */
+    eProsima_user_DllExport GrpcInfo(
+            const GrpcInfo& x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object GrpcInfo that will be copied.
+     */
+    eProsima_user_DllExport GrpcInfo(
+            GrpcInfo&& x) noexcept;
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object GrpcInfo that will be copied.
+     */
+    eProsima_user_DllExport GrpcInfo& operator =(
+            const GrpcInfo& x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object GrpcInfo that will be copied.
+     */
+    eProsima_user_DllExport GrpcInfo& operator =(
+            GrpcInfo&& x) noexcept;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x GrpcInfo object to compare.
+     */
+    eProsima_user_DllExport bool operator ==(
+            const GrpcInfo& x) const;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x GrpcInfo object to compare.
+     */
+    eProsima_user_DllExport bool operator !=(
+            const GrpcInfo& x) const;
+
+    /*!
+     * @brief This function copies the value in member funName
+     * @param _funName New value to be copied in member funName
+     */
+    eProsima_user_DllExport void funName(
+            const std::string& _funName);
+
+    /*!
+     * @brief This function moves the value in member funName
+     * @param _funName New value to be moved in member funName
+     */
+    eProsima_user_DllExport void funName(
+            std::string&& _funName);
+
+    /*!
+     * @brief This function returns a constant reference to member funName
+     * @return Constant reference to member funName
+     */
+    eProsima_user_DllExport const std::string& funName() const;
+
+    /*!
+     * @brief This function returns a reference to member funName
+     * @return Reference to member funName
+     */
+    eProsima_user_DllExport std::string& funName();
+
+
+    /*!
+     * @brief This function sets a value in member arg1
+     * @param _arg1 New value for member arg1
+     */
+    eProsima_user_DllExport void arg1(
+            uint32_t _arg1);
+
+    /*!
+     * @brief This function returns the value of member arg1
+     * @return Value of member arg1
+     */
+    eProsima_user_DllExport uint32_t arg1() const;
+
+    /*!
+     * @brief This function returns a reference to member arg1
+     * @return Reference to member arg1
+     */
+    eProsima_user_DllExport uint32_t& arg1();
+
+
+    /*!
+     * @brief This function sets a value in member arg2
+     * @param _arg2 New value for member arg2
+     */
+    eProsima_user_DllExport void arg2(
+            uint32_t _arg2);
+
+    /*!
+     * @brief This function returns the value of member arg2
+     * @return Value of member arg2
+     */
+    eProsima_user_DllExport uint32_t arg2() const;
+
+    /*!
+     * @brief This function returns a reference to member arg2
+     * @return Reference to member arg2
+     */
+    eProsima_user_DllExport uint32_t& arg2();
+
+private:
+
+    std::string m_funName;
+    uint32_t m_arg1{0};
+    uint32_t m_arg2{0};
+
+};
+
+
+/*!
+ * @brief This class represents the structure GrpcReplay defined by the user in the IDL file.
+ * @ingroup DataDefine
+ */
+class GrpcReplay
+{
+public:
+
+    /*!
+     * @brief Default constructor.
+     */
+    eProsima_user_DllExport GrpcReplay();
+
+    /*!
+     * @brief Default destructor.
+     */
+    eProsima_user_DllExport ~GrpcReplay();
+
+    /*!
+     * @brief Copy constructor.
+     * @param x Reference to the object GrpcReplay that will be copied.
+     */
+    eProsima_user_DllExport GrpcReplay(
+            const GrpcReplay& x);
+
+    /*!
+     * @brief Move constructor.
+     * @param x Reference to the object GrpcReplay that will be copied.
+     */
+    eProsima_user_DllExport GrpcReplay(
+            GrpcReplay&& x) noexcept;
+
+    /*!
+     * @brief Copy assignment.
+     * @param x Reference to the object GrpcReplay that will be copied.
+     */
+    eProsima_user_DllExport GrpcReplay& operator =(
+            const GrpcReplay& x);
+
+    /*!
+     * @brief Move assignment.
+     * @param x Reference to the object GrpcReplay that will be copied.
+     */
+    eProsima_user_DllExport GrpcReplay& operator =(
+            GrpcReplay&& x) noexcept;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x GrpcReplay object to compare.
+     */
+    eProsima_user_DllExport bool operator ==(
+            const GrpcReplay& x) const;
+
+    /*!
+     * @brief Comparison operator.
+     * @param x GrpcReplay object to compare.
+     */
+    eProsima_user_DllExport bool operator !=(
+            const GrpcReplay& x) const;
+
+    /*!
+     * @brief This function sets a value in member result
+     * @param _result New value for member result
+     */
+    eProsima_user_DllExport void result(
+            uint32_t _result);
+
+    /*!
+     * @brief This function returns the value of member result
+     * @return Value of member result
+     */
+    eProsima_user_DllExport uint32_t result() const;
+
+    /*!
+     * @brief This function returns a reference to member result
+     * @return Reference to member result
+     */
+    eProsima_user_DllExport uint32_t& result();
+
+private:
+
+    uint32_t m_result{0};
+
+};
+
 #endif // _FAST_DDS_GENERATED_DATADEFINE_H_
 
 

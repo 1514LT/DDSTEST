@@ -24,8 +24,14 @@
 
 #include "DataDefine.h"
 
+constexpr uint32_t GrpcReplay_max_cdr_typesize {8UL};
+constexpr uint32_t GrpcReplay_max_key_cdr_typesize {0UL};
+
 constexpr uint32_t Target_max_cdr_typesize {269UL};
 constexpr uint32_t Target_max_key_cdr_typesize {0UL};
+
+constexpr uint32_t GrpcInfo_max_cdr_typesize {272UL};
+constexpr uint32_t GrpcInfo_max_key_cdr_typesize {0UL};
 
 constexpr uint32_t Replay_max_cdr_typesize {268UL};
 constexpr uint32_t Replay_max_key_cdr_typesize {0UL};
@@ -57,6 +63,18 @@ eProsima_user_DllExport void serialize_key(
 eProsima_user_DllExport void serialize_key(
         eprosima::fastcdr::Cdr& scdr,
         const DataChunk& data);
+
+
+
+eProsima_user_DllExport void serialize_key(
+        eprosima::fastcdr::Cdr& scdr,
+        const GrpcInfo& data);
+
+
+
+eProsima_user_DllExport void serialize_key(
+        eprosima::fastcdr::Cdr& scdr,
+        const GrpcReplay& data);
 
 
 } // namespace fastcdr

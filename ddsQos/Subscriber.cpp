@@ -4,6 +4,8 @@ MainSubListener::MainSubListener()
 :m_replays(0),
 m_samples(0)
 {
+  funcMap["sum"] = &sum;
+  funcMap["subtract"] = &subtract;
 }
 
 MainSubListener::~MainSubListener()
@@ -94,6 +96,58 @@ void MainSubListener::on_data_available(DataReader * reader)
           std::cout << "startTime:" << startTime << std::endl;
           std::cout << "endTime:"  << endTime << std::endl;
         }
+      }
+    }
+  }
+  else if(reader->get_topicdescription()->get_name() == "GrpcInfoTopic")
+  {
+    GrpcInfo msg;
+    while (reader->take_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
+    {
+      if (info.valid_data)
+      {
+        std::cout << "recv GrpcInfoTopic\n";
+        // 调用函数
+        std::future<int> result = std::async(std::launch::async,funcMap[msg.funName()],(int)msg.arg1(),(int)msg.arg2());
+        int value = result.get();
+        // 返回结果
+        GrpcReplay replay;
+        replay.result(value);
+        std::cout << "send result:" << value << std::endl;
+        MainPublisher pub;
+        pub.pair_topics["GrpcReplay"] = new GrpcReplayPubSubType;
+        pub.init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,testTypes::Test);
+        
+        // 等待发布者和订阅者匹配
+        int retry_count = 0;
+        const int max_retries = 10;
+        while (!pub.TargetMatched() && retry_count < max_retries)
+        {
+          std::cout << "等待 GrpcReplay 主题匹配..." << std::endl;
+          std::this_thread::sleep_for(std::chrono::seconds(1));
+          retry_count++;
+        }
+        
+        if (pub.TargetMatched())
+        {
+          std::cout << "GrpcReplay 主题匹配成功，发送消息" << std::endl;
+          pub.SendMsg(replay);
+        }
+        else
+        {
+          std::cout << "GrpcReplay 主题匹配超时，放弃发送" << std::endl;
+        }
+      }
+    }
+  }
+  else if(reader->get_topicdescription()->get_name() == "GrpcReplayTopic")
+  {
+    GrpcReplay msg;
+    while (reader->take_next_sample(&msg, &info) == ReturnCode_t::RETCODE_OK)
+    {
+      if (info.valid_data)
+      {
+        std::cout << "result:" << msg.result() << std::endl;
       }
     }
   }

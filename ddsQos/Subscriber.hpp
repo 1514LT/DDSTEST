@@ -21,6 +21,8 @@
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
 #include <thread>
+#include <future>
+#include <unordered_map>
 
 #include <fastdds/rtps/transport/TCPv4TransportDescriptor.h>
 #include <fastdds/rtps/transport/TCPv6TransportDescriptor.h>
@@ -35,6 +37,8 @@ using namespace eprosima::fastdds::dds;
 using namespace eprosima::fastdds::rtps;
 using IPLocator = eprosima::fastrtps::rtps::IPLocator;
 
+  inline int sum(int a,int b){return a+b;}
+  inline int subtract(int a,int b){return a-b;}
 class MainSubListener : public DataReaderListener
 {
 private:
@@ -42,6 +46,7 @@ private:
   std::atomic_int m_replays;
   std::string startTime;
   std::string endTime;
+  std::unordered_map<std::string,int(*)(int,int)> funcMap;
 public:
   MainSubListener();
   ~MainSubListener();
@@ -50,6 +55,8 @@ public:
   void on_data_available(DataReader * reader) override;
 
   void on_requested_deadline_missed(DataReader* reader,const RequestedDeadlineMissedStatus& status)override;
+public:
+
 };
 
 

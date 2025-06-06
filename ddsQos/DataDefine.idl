@@ -15,3 +15,13 @@ struct DataChunk {
     sequence<octet> payload;       // 分片内容（如每片64KB）
     octet flag;
 };
+struct GrpcInfo
+{
+  string funName;
+  unsigned long arg1;
+  unsigned long arg2;
+};
+struct GrpcReplay
+{
+  unsigned long result;
+};

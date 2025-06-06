@@ -599,3 +599,383 @@ bool DataChunkPubSubType::getKey(
     return true;
 }
 
+
+
+GrpcInfoPubSubType::GrpcInfoPubSubType()
+{
+    setName("GrpcInfo");
+    uint32_t type_size =
+#if FASTCDR_VERSION_MAJOR == 1
+        static_cast<uint32_t>(GrpcInfo::getMaxCdrSerializedSize());
+#else
+        GrpcInfo_max_cdr_typesize;
+#endif
+    type_size += static_cast<uint32_t>(eprosima::fastcdr::Cdr::alignment(type_size, 4)); /* possible submessage alignment */
+    m_typeSize = type_size + 4; /*encapsulation*/
+    m_isGetKeyDefined = false;
+    uint32_t keyLength = GrpcInfo_max_key_cdr_typesize > 16 ? GrpcInfo_max_key_cdr_typesize : 16;
+    m_keyBuffer = reinterpret_cast<unsigned char*>(malloc(keyLength));
+    memset(m_keyBuffer, 0, keyLength);
+}
+
+GrpcInfoPubSubType::~GrpcInfoPubSubType()
+{
+    if (m_keyBuffer != nullptr)
+    {
+        free(m_keyBuffer);
+    }
+}
+
+bool GrpcInfoPubSubType::serialize(
+        void* data,
+        SerializedPayload_t* payload,
+        DataRepresentationId_t data_representation)
+{
+    GrpcInfo* p_type = static_cast<GrpcInfo*>(data);
+
+    // Object that manages the raw buffer.
+    eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(payload->data), payload->max_size);
+    // Object that serializes the data.
+    eprosima::fastcdr::Cdr ser(fastbuffer, eprosima::fastcdr::Cdr::DEFAULT_ENDIAN,
+            data_representation == DataRepresentationId_t::XCDR_DATA_REPRESENTATION ?
+            eprosima::fastcdr::CdrVersion::XCDRv1 : eprosima::fastcdr::CdrVersion::XCDRv2);
+    payload->encapsulation = ser.endianness() == eprosima::fastcdr::Cdr::BIG_ENDIANNESS ? CDR_BE : CDR_LE;
+#if FASTCDR_VERSION_MAJOR > 1
+    ser.set_encoding_flag(
+        data_representation == DataRepresentationId_t::XCDR_DATA_REPRESENTATION ?
+        eprosima::fastcdr::EncodingAlgorithmFlag::PLAIN_CDR  :
+        eprosima::fastcdr::EncodingAlgorithmFlag::DELIMIT_CDR2);
+#endif // FASTCDR_VERSION_MAJOR > 1
+
+    try
+    {
+        // Serialize encapsulation
+        ser.serialize_encapsulation();
+        // Serialize the object.
+        ser << *p_type;
+    }
+    catch (eprosima::fastcdr::exception::Exception& /*exception*/)
+    {
+        return false;
+    }
+
+    // Get the serialized length
+#if FASTCDR_VERSION_MAJOR == 1
+    payload->length = static_cast<uint32_t>(ser.getSerializedDataLength());
+#else
+    payload->length = static_cast<uint32_t>(ser.get_serialized_data_length());
+#endif // FASTCDR_VERSION_MAJOR == 1
+    return true;
+}
+
+bool GrpcInfoPubSubType::deserialize(
+        SerializedPayload_t* payload,
+        void* data)
+{
+    try
+    {
+        // Convert DATA to pointer of your type
+        GrpcInfo* p_type = static_cast<GrpcInfo*>(data);
+
+        // Object that manages the raw buffer.
+        eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(payload->data), payload->length);
+
+        // Object that deserializes the data.
+        eprosima::fastcdr::Cdr deser(fastbuffer, eprosima::fastcdr::Cdr::DEFAULT_ENDIAN
+#if FASTCDR_VERSION_MAJOR == 1
+                , eprosima::fastcdr::Cdr::CdrType::DDS_CDR
+#endif // FASTCDR_VERSION_MAJOR == 1
+                );
+
+        // Deserialize encapsulation.
+        deser.read_encapsulation();
+        payload->encapsulation = deser.endianness() == eprosima::fastcdr::Cdr::BIG_ENDIANNESS ? CDR_BE : CDR_LE;
+
+        // Deserialize the object.
+        deser >> *p_type;
+    }
+    catch (eprosima::fastcdr::exception::Exception& /*exception*/)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+std::function<uint32_t()> GrpcInfoPubSubType::getSerializedSizeProvider(
+        void* data,
+        DataRepresentationId_t data_representation)
+{
+    return [data, data_representation]() -> uint32_t
+           {
+#if FASTCDR_VERSION_MAJOR == 1
+               static_cast<void>(data_representation);
+               return static_cast<uint32_t>(type::getCdrSerializedSize(*static_cast<GrpcInfo*>(data))) +
+                      4u /*encapsulation*/;
+#else
+               try
+               {
+                   eprosima::fastcdr::CdrSizeCalculator calculator(
+                       data_representation == DataRepresentationId_t::XCDR_DATA_REPRESENTATION ?
+                       eprosima::fastcdr::CdrVersion::XCDRv1 :eprosima::fastcdr::CdrVersion::XCDRv2);
+                   size_t current_alignment {0};
+                   return static_cast<uint32_t>(calculator.calculate_serialized_size(
+                               *static_cast<GrpcInfo*>(data), current_alignment)) +
+                           4u /*encapsulation*/;
+               }
+               catch (eprosima::fastcdr::exception::Exception& /*exception*/)
+               {
+                   return 0;
+               }
+#endif // FASTCDR_VERSION_MAJOR == 1
+           };
+}
+
+void* GrpcInfoPubSubType::createData()
+{
+    return reinterpret_cast<void*>(new GrpcInfo());
+}
+
+void GrpcInfoPubSubType::deleteData(
+        void* data)
+{
+    delete(reinterpret_cast<GrpcInfo*>(data));
+}
+
+bool GrpcInfoPubSubType::getKey(
+        void* data,
+        InstanceHandle_t* handle,
+        bool force_md5)
+{
+    if (!m_isGetKeyDefined)
+    {
+        return false;
+    }
+
+    GrpcInfo* p_type = static_cast<GrpcInfo*>(data);
+
+    // Object that manages the raw buffer.
+    eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(m_keyBuffer),
+            GrpcInfo_max_key_cdr_typesize);
+
+    // Object that serializes the data.
+    eprosima::fastcdr::Cdr ser(fastbuffer, eprosima::fastcdr::Cdr::BIG_ENDIANNESS, eprosima::fastcdr::CdrVersion::XCDRv1);
+#if FASTCDR_VERSION_MAJOR == 1
+    p_type->serializeKey(ser);
+#else
+    eprosima::fastcdr::serialize_key(ser, *p_type);
+#endif // FASTCDR_VERSION_MAJOR == 1
+    if (force_md5 || GrpcInfo_max_key_cdr_typesize > 16)
+    {
+        m_md5.init();
+#if FASTCDR_VERSION_MAJOR == 1
+        m_md5.update(m_keyBuffer, static_cast<unsigned int>(ser.getSerializedDataLength()));
+#else
+        m_md5.update(m_keyBuffer, static_cast<unsigned int>(ser.get_serialized_data_length()));
+#endif // FASTCDR_VERSION_MAJOR == 1
+        m_md5.finalize();
+        for (uint8_t i = 0; i < 16; ++i)
+        {
+            handle->value[i] = m_md5.digest[i];
+        }
+    }
+    else
+    {
+        for (uint8_t i = 0; i < 16; ++i)
+        {
+            handle->value[i] = m_keyBuffer[i];
+        }
+    }
+    return true;
+}
+
+
+
+GrpcReplayPubSubType::GrpcReplayPubSubType()
+{
+    setName("GrpcReplay");
+    uint32_t type_size =
+#if FASTCDR_VERSION_MAJOR == 1
+        static_cast<uint32_t>(GrpcReplay::getMaxCdrSerializedSize());
+#else
+        GrpcReplay_max_cdr_typesize;
+#endif
+    type_size += static_cast<uint32_t>(eprosima::fastcdr::Cdr::alignment(type_size, 4)); /* possible submessage alignment */
+    m_typeSize = type_size + 4; /*encapsulation*/
+    m_isGetKeyDefined = false;
+    uint32_t keyLength = GrpcReplay_max_key_cdr_typesize > 16 ? GrpcReplay_max_key_cdr_typesize : 16;
+    m_keyBuffer = reinterpret_cast<unsigned char*>(malloc(keyLength));
+    memset(m_keyBuffer, 0, keyLength);
+}
+
+GrpcReplayPubSubType::~GrpcReplayPubSubType()
+{
+    if (m_keyBuffer != nullptr)
+    {
+        free(m_keyBuffer);
+    }
+}
+
+bool GrpcReplayPubSubType::serialize(
+        void* data,
+        SerializedPayload_t* payload,
+        DataRepresentationId_t data_representation)
+{
+    GrpcReplay* p_type = static_cast<GrpcReplay*>(data);
+
+    // Object that manages the raw buffer.
+    eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(payload->data), payload->max_size);
+    // Object that serializes the data.
+    eprosima::fastcdr::Cdr ser(fastbuffer, eprosima::fastcdr::Cdr::DEFAULT_ENDIAN,
+            data_representation == DataRepresentationId_t::XCDR_DATA_REPRESENTATION ?
+            eprosima::fastcdr::CdrVersion::XCDRv1 : eprosima::fastcdr::CdrVersion::XCDRv2);
+    payload->encapsulation = ser.endianness() == eprosima::fastcdr::Cdr::BIG_ENDIANNESS ? CDR_BE : CDR_LE;
+#if FASTCDR_VERSION_MAJOR > 1
+    ser.set_encoding_flag(
+        data_representation == DataRepresentationId_t::XCDR_DATA_REPRESENTATION ?
+        eprosima::fastcdr::EncodingAlgorithmFlag::PLAIN_CDR  :
+        eprosima::fastcdr::EncodingAlgorithmFlag::DELIMIT_CDR2);
+#endif // FASTCDR_VERSION_MAJOR > 1
+
+    try
+    {
+        // Serialize encapsulation
+        ser.serialize_encapsulation();
+        // Serialize the object.
+        ser << *p_type;
+    }
+    catch (eprosima::fastcdr::exception::Exception& /*exception*/)
+    {
+        return false;
+    }
+
+    // Get the serialized length
+#if FASTCDR_VERSION_MAJOR == 1
+    payload->length = static_cast<uint32_t>(ser.getSerializedDataLength());
+#else
+    payload->length = static_cast<uint32_t>(ser.get_serialized_data_length());
+#endif // FASTCDR_VERSION_MAJOR == 1
+    return true;
+}
+
+bool GrpcReplayPubSubType::deserialize(
+        SerializedPayload_t* payload,
+        void* data)
+{
+    try
+    {
+        // Convert DATA to pointer of your type
+        GrpcReplay* p_type = static_cast<GrpcReplay*>(data);
+
+        // Object that manages the raw buffer.
+        eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(payload->data), payload->length);
+
+        // Object that deserializes the data.
+        eprosima::fastcdr::Cdr deser(fastbuffer, eprosima::fastcdr::Cdr::DEFAULT_ENDIAN
+#if FASTCDR_VERSION_MAJOR == 1
+                , eprosima::fastcdr::Cdr::CdrType::DDS_CDR
+#endif // FASTCDR_VERSION_MAJOR == 1
+                );
+
+        // Deserialize encapsulation.
+        deser.read_encapsulation();
+        payload->encapsulation = deser.endianness() == eprosima::fastcdr::Cdr::BIG_ENDIANNESS ? CDR_BE : CDR_LE;
+
+        // Deserialize the object.
+        deser >> *p_type;
+    }
+    catch (eprosima::fastcdr::exception::Exception& /*exception*/)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+std::function<uint32_t()> GrpcReplayPubSubType::getSerializedSizeProvider(
+        void* data,
+        DataRepresentationId_t data_representation)
+{
+    return [data, data_representation]() -> uint32_t
+           {
+#if FASTCDR_VERSION_MAJOR == 1
+               static_cast<void>(data_representation);
+               return static_cast<uint32_t>(type::getCdrSerializedSize(*static_cast<GrpcReplay*>(data))) +
+                      4u /*encapsulation*/;
+#else
+               try
+               {
+                   eprosima::fastcdr::CdrSizeCalculator calculator(
+                       data_representation == DataRepresentationId_t::XCDR_DATA_REPRESENTATION ?
+                       eprosima::fastcdr::CdrVersion::XCDRv1 :eprosima::fastcdr::CdrVersion::XCDRv2);
+                   size_t current_alignment {0};
+                   return static_cast<uint32_t>(calculator.calculate_serialized_size(
+                               *static_cast<GrpcReplay*>(data), current_alignment)) +
+                           4u /*encapsulation*/;
+               }
+               catch (eprosima::fastcdr::exception::Exception& /*exception*/)
+               {
+                   return 0;
+               }
+#endif // FASTCDR_VERSION_MAJOR == 1
+           };
+}
+
+void* GrpcReplayPubSubType::createData()
+{
+    return reinterpret_cast<void*>(new GrpcReplay());
+}
+
+void GrpcReplayPubSubType::deleteData(
+        void* data)
+{
+    delete(reinterpret_cast<GrpcReplay*>(data));
+}
+
+bool GrpcReplayPubSubType::getKey(
+        void* data,
+        InstanceHandle_t* handle,
+        bool force_md5)
+{
+    if (!m_isGetKeyDefined)
+    {
+        return false;
+    }
+
+    GrpcReplay* p_type = static_cast<GrpcReplay*>(data);
+
+    // Object that manages the raw buffer.
+    eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(m_keyBuffer),
+            GrpcReplay_max_key_cdr_typesize);
+
+    // Object that serializes the data.
+    eprosima::fastcdr::Cdr ser(fastbuffer, eprosima::fastcdr::Cdr::BIG_ENDIANNESS, eprosima::fastcdr::CdrVersion::XCDRv1);
+#if FASTCDR_VERSION_MAJOR == 1
+    p_type->serializeKey(ser);
+#else
+    eprosima::fastcdr::serialize_key(ser, *p_type);
+#endif // FASTCDR_VERSION_MAJOR == 1
+    if (force_md5 || GrpcReplay_max_key_cdr_typesize > 16)
+    {
+        m_md5.init();
+#if FASTCDR_VERSION_MAJOR == 1
+        m_md5.update(m_keyBuffer, static_cast<unsigned int>(ser.getSerializedDataLength()));
+#else
+        m_md5.update(m_keyBuffer, static_cast<unsigned int>(ser.get_serialized_data_length()));
+#endif // FASTCDR_VERSION_MAJOR == 1
+        m_md5.finalize();
+        for (uint8_t i = 0; i < 16; ++i)
+        {
+            handle->value[i] = m_md5.digest[i];
+        }
+    }
+    else
+    {
+        for (uint8_t i = 0; i < 16; ++i)
+        {
+            handle->value[i] = m_keyBuffer[i];
+        }
+    }
+    return true;
+}
+

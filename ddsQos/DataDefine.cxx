@@ -508,6 +508,242 @@ uint8_t& DataChunk::flag()
 }
 
 
+
+
+GrpcInfo::GrpcInfo()
+{
+}
+
+GrpcInfo::~GrpcInfo()
+{
+}
+
+GrpcInfo::GrpcInfo(
+        const GrpcInfo& x)
+{
+    m_funName = x.m_funName;
+    m_arg1 = x.m_arg1;
+    m_arg2 = x.m_arg2;
+}
+
+GrpcInfo::GrpcInfo(
+        GrpcInfo&& x) noexcept
+{
+    m_funName = std::move(x.m_funName);
+    m_arg1 = x.m_arg1;
+    m_arg2 = x.m_arg2;
+}
+
+GrpcInfo& GrpcInfo::operator =(
+        const GrpcInfo& x)
+{
+
+    m_funName = x.m_funName;
+    m_arg1 = x.m_arg1;
+    m_arg2 = x.m_arg2;
+    return *this;
+}
+
+GrpcInfo& GrpcInfo::operator =(
+        GrpcInfo&& x) noexcept
+{
+
+    m_funName = std::move(x.m_funName);
+    m_arg1 = x.m_arg1;
+    m_arg2 = x.m_arg2;
+    return *this;
+}
+
+bool GrpcInfo::operator ==(
+        const GrpcInfo& x) const
+{
+    return (m_funName == x.m_funName &&
+           m_arg1 == x.m_arg1 &&
+           m_arg2 == x.m_arg2);
+}
+
+bool GrpcInfo::operator !=(
+        const GrpcInfo& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function copies the value in member funName
+ * @param _funName New value to be copied in member funName
+ */
+void GrpcInfo::funName(
+        const std::string& _funName)
+{
+    m_funName = _funName;
+}
+
+/*!
+ * @brief This function moves the value in member funName
+ * @param _funName New value to be moved in member funName
+ */
+void GrpcInfo::funName(
+        std::string&& _funName)
+{
+    m_funName = std::move(_funName);
+}
+
+/*!
+ * @brief This function returns a constant reference to member funName
+ * @return Constant reference to member funName
+ */
+const std::string& GrpcInfo::funName() const
+{
+    return m_funName;
+}
+
+/*!
+ * @brief This function returns a reference to member funName
+ * @return Reference to member funName
+ */
+std::string& GrpcInfo::funName()
+{
+    return m_funName;
+}
+
+
+/*!
+ * @brief This function sets a value in member arg1
+ * @param _arg1 New value for member arg1
+ */
+void GrpcInfo::arg1(
+        uint32_t _arg1)
+{
+    m_arg1 = _arg1;
+}
+
+/*!
+ * @brief This function returns the value of member arg1
+ * @return Value of member arg1
+ */
+uint32_t GrpcInfo::arg1() const
+{
+    return m_arg1;
+}
+
+/*!
+ * @brief This function returns a reference to member arg1
+ * @return Reference to member arg1
+ */
+uint32_t& GrpcInfo::arg1()
+{
+    return m_arg1;
+}
+
+
+/*!
+ * @brief This function sets a value in member arg2
+ * @param _arg2 New value for member arg2
+ */
+void GrpcInfo::arg2(
+        uint32_t _arg2)
+{
+    m_arg2 = _arg2;
+}
+
+/*!
+ * @brief This function returns the value of member arg2
+ * @return Value of member arg2
+ */
+uint32_t GrpcInfo::arg2() const
+{
+    return m_arg2;
+}
+
+/*!
+ * @brief This function returns a reference to member arg2
+ * @return Reference to member arg2
+ */
+uint32_t& GrpcInfo::arg2()
+{
+    return m_arg2;
+}
+
+
+
+
+GrpcReplay::GrpcReplay()
+{
+}
+
+GrpcReplay::~GrpcReplay()
+{
+}
+
+GrpcReplay::GrpcReplay(
+        const GrpcReplay& x)
+{
+    m_result = x.m_result;
+}
+
+GrpcReplay::GrpcReplay(
+        GrpcReplay&& x) noexcept
+{
+    m_result = x.m_result;
+}
+
+GrpcReplay& GrpcReplay::operator =(
+        const GrpcReplay& x)
+{
+
+    m_result = x.m_result;
+    return *this;
+}
+
+GrpcReplay& GrpcReplay::operator =(
+        GrpcReplay&& x) noexcept
+{
+
+    m_result = x.m_result;
+    return *this;
+}
+
+bool GrpcReplay::operator ==(
+        const GrpcReplay& x) const
+{
+    return (m_result == x.m_result);
+}
+
+bool GrpcReplay::operator !=(
+        const GrpcReplay& x) const
+{
+    return !(*this == x);
+}
+
+/*!
+ * @brief This function sets a value in member result
+ * @param _result New value for member result
+ */
+void GrpcReplay::result(
+        uint32_t _result)
+{
+    m_result = _result;
+}
+
+/*!
+ * @brief This function returns the value of member result
+ * @return Value of member result
+ */
+uint32_t GrpcReplay::result() const
+{
+    return m_result;
+}
+
+/*!
+ * @brief This function returns a reference to member result
+ * @return Reference to member result
+ */
+uint32_t& GrpcReplay::result()
+{
+    return m_result;
+}
+
+
 // Include auxiliary functions like for serializing/deserializing.
 #include "DataDefineCdrAux.ipp"
 

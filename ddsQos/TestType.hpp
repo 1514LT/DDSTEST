@@ -15,6 +15,7 @@ enum class testTypes {
   PartitionB, // 分区B
   Test, // UDP跨网络
   BigData, // 大文件传输
+  Grpc,
   Default
 };
 

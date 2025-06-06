@@ -447,3 +447,13 @@ void MainPublisher::SendMsg(DataChunk& dataChunk)
   m_writers[0].second->write(&dataChunk);
   return;
 }
+void MainPublisher::SendMsg(GrpcInfo& grpc)
+{
+  m_writers[0].second->write(&grpc);
+  return;
+}
+void MainPublisher::SendMsg(GrpcReplay& replay)
+{
+  m_writers[0].second->write(&replay);
+  return;  
+}

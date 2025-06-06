@@ -32,6 +32,34 @@ public:
     discover = new Discover;
     discover->init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,false,"127.0.0.1",9090,1);
   }
+  void RunGrpc()
+  {
+    pub = new MainPublisher;
+    pub->pair_topics["GrpcInfo"] = new GrpcInfoPubSubType;
+    pub->init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,m_type);
+    GrpcInfo grpc;
+    grpc.funName("sum");
+    grpc.arg1(11);
+    grpc.arg2(22);
+    sleep(2);
+    while (1)
+    {
+      if(pub->TargetMatched())
+      {
+        pub->SendMsg(grpc);
+        std::cout << "send grpc msg" << std:: endl;
+        break;
+      }
+    }
+    MainSubscriber test_sub;
+    test_sub.pair_topics["GrpcReplay"] = new GrpcReplayPubSubType;
+    
+    test_sub.init(JRLC::getIP(),JRLC::getPort(),1,TransportKind::UDPv4,testTypes::Test);
+    while (1)
+    {
+      std::this_thread::sleep_for(std::chrono::seconds(2));
+    }
+  }
   void RunPubDataChunk()
   {
     const size_t chunk_size = 1024 * 100;
@@ -116,6 +144,10 @@ public:
     if(m_type == testTypes::BigData)
     {
       sub->pair_topics["DataChunk"] = new DataChunkPubSubType;
+    }
+    else if(m_type == testTypes::Grpc)
+    {
+      sub->pair_topics["GrpcInfo"] = new GrpcInfoPubSubType;
     }
     else
     {
@@ -208,6 +240,13 @@ int main(int argc, char const *argv[])
         main.m_type = testTypes::Test;
       }
       break;
+    case 'G':
+      if (qosType == "Grpc")
+      {
+        std::cout << "Grpc" << std::endl;
+        main.m_type = testTypes::Grpc;
+      }
+      break;
   }
   if(node == "discover")
   {
@@ -218,6 +257,10 @@ int main(int argc, char const *argv[])
     if(main.m_type == testTypes::BigData)
     {
       main.RunPubDataChunk();
+    }
+    if(main.m_type == testTypes::Grpc)
+    {
+      main.RunGrpc();
     }
     else
     {

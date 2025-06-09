@@ -389,12 +389,26 @@ bool MainPublisher::TargetMatched()
 
 bool MainPublisher::PublishTarget(Target &target)
 {
-  return !m_writers.empty() && m_writers[0].second->write(&target);
+  for(auto writer: m_writers)
+  {
+    if(writer.first->get_name() == "TargetTopic")
+    {
+      return writer.second->write(&target);
+    }
+  }
+  return false;
 }
 bool MainPublisher::PublishReplay(Replay &replay)
 {
   std::cout << "---->send Replay msg" << std::endl;
-  return !m_writers.empty() && m_writers[0].second->write(&replay);
+  for(auto writer: m_writers)
+  {
+    if(writer.first->get_name() == "ReplayTopic")
+    {
+      return writer.second->write(&replay);
+    }
+  }
+  return false;
 }
 void MainPublisher::SendMsg()
 {
@@ -444,16 +458,37 @@ void MainPublisher::SendMsg(Replay& replay)
 
 void MainPublisher::SendMsg(DataChunk& dataChunk)
 {
-  m_writers[0].second->write(&dataChunk);
+  for(auto writer: m_writers)
+  {
+    if(writer.first->get_name() == "DataChunkTopic")
+    {
+      writer.second->write(&dataChunk);
+      break;
+    }
+  }
   return;
 }
 void MainPublisher::SendMsg(GrpcInfo& grpc)
 {
-  m_writers[0].second->write(&grpc);
+  for(auto writer: m_writers)
+  {
+    if(writer.first->get_name() == "GrpcInfoTopic")
+    {
+      writer.second->write(&grpc);
+      break;
+    }
+  }
   return;
 }
 void MainPublisher::SendMsg(GrpcReplay& replay)
 {
-  m_writers[0].second->write(&replay);
+  for(auto writer: m_writers)
+  {
+    if(writer.first->get_name() == "GrpcReplayTopic")
+    {
+      writer.second->write(&replay);
+      break;
+    }
+  }
   return;  
 }

@@ -129,16 +129,17 @@ void LifespanSubscriber::SubListener::on_subscription_matched(
 void LifespanSubscriber::SubListener::on_data_available(
         DataReader* reader)
 {
-    SampleInfo info;
-    if (reader->read_next_sample(&hello, &info) == ReturnCode_t::RETCODE_OK)
-    {
-        if (info.valid_data)
-        {
-            this->n_samples++;
-            // Print your structure data here.
-            std::cout << "Message " << hello.message() << " " << hello.index() << " RECEIVED" << std::endl;
-        }
-    }
+    this->n_samples++;
+    // SampleInfo info;
+    // if (reader->read_next_sample(&hello, &info) == ReturnCode_t::RETCODE_OK)
+    // {
+    //     if (info.valid_data)
+    //     {
+    //         this->n_samples++;
+    //         // Print your structure data here.
+    //         std::cout << "Message " << hello.message() << " " << hello.index() << " RECEIVED" << std::endl;
+    //     }
+    // }
 }
 
 void LifespanSubscriber::run(
